@@ -1,0 +1,231 @@
+---
+title: "TLR9 and beclin 1 crosstalk regulates muscle AMPK activation in exercise"
+author: "Jeffrey A. Walker"
+date: "1/22/2021"
+output: html_document
+---
+
+source: [TLR9 and beclin 1 crosstalk regulates muscle AMPK activation in exercise](https://www.nature.com/articles/s41586-020-1992-7)
+
+area: cell
+
+published methods: 
+
+design: 
+
+key teaching concepts: Fig 2 Focuses on interactions but never use the term. Terrible way to plot interaction effect.
+
+
+
+comments:
+
+```{r setup, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(here)
+library(janitor)
+library(readxl)
+library(data.table)
+
+library(afex)
+library(car)
+library(emmeans)
+
+library(knitr)
+library(kableExtra)
+
+here <- here::here
+
+#source_path <- here("R/ggplot_the_model.R")
+#source(source_path)
+ggplotsci_path <- here("R", "ggplotsci.R")
+source(ggplotsci_path)
+```
+
+```{r}
+data_folder <- "data"
+data_from <- "Tlr9 and Beclin 1 Cross-Talk Regulates Muscle AMPK Activation"
+file_name <- "41586_2020_1992_MOESM4_ESM.xlsx"
+```
+
+# fig2j
+
+```{r}
+file_path <- here(data_folder, data_from, file_name)
+
+treatment_levels  <- c("WT Resting",
+                       "WT Stimulation",
+                       "Tlr9-/- Resting",
+                       "Tlr9-/- Stimulation")
+fig2j_wide <- read_excel(file_path,
+                         sheet = "2j",
+                         range = "A5:D13",
+                         col_names = TRUE) %>%
+  data.table()
+
+colnames(fig2j_wide) <- treatment_levels
+
+fig2j <- melt(fig2j_wide,
+              measure.vars = treatment_levels,
+              variable.name = "treatment",
+              value.name = "glucose_uptake") %>%
+  na.omit() # danger!
+
+fig2j[, c("genotype", "stimulation") := tstrsplit(treatment,
+                                                  " ",
+                                                  fixed = TRUE)]
+
+genotype_levels <- c("WT", "Tlr9-/-")
+stimulation_levels <- c("Resting", "Stimulation")
+fig2j[, genotype := factor(genotype,
+                           levels = genotype_levels)]
+fig2j[, stimulation := factor(stimulation,
+                              levels = stimulation_levels)]
+# View(fig2j)
+```
+
+What are the p-values? three reported
+
+1. (wt stim) - (wt relax) < 0.0001
+2. (Tlr9-/1 stim) - (Tlr9-/1 stim) = .1325
+3. ?? = .0152.
+
+What is the 3rd p-value. Based on the brackets, this looks like the p-value for the difference: mean(tlr9-/-)  - mean(wt) (that is the mean of the two tlr9-/- groups minus the mean of the two wt groups. This is the p-value of the genotype term in the anova table). But, based on how they present the results, I think they mean it to be the interaction p-value. This is a terrible way to communicate the interaction p-value.
+
+This is the reporting for each of the subfigures that has the same kind of p-value bracket:
+
+Fig 2b: "However, compared to littermate controls, Tlr9−/− mice were deficient in exercise-induced activation of AMPK in muscles"
+
+interpretation -- compared to the exercise induced increase in WT, there was less exercise-induced increase in Tlr9-/- mice. "deficient" implies neg. interaction.
+
+Fig 2i: "Similar to observations during treadmill exercise, muscles from wild-type (as compared to Tlr9−/−) mice displayed a greater increase in ex vivo contraction-induced phosphorylation of AMPK"
+
+interpretation -- "greater increase" implies neg interaction
+
+Fig 2j: "Importantly, there was a corresponding decrease in ex vivo contraction-stimulated glucose uptake in muscles of Tlr9−/− mice (Fig. 2j)."
+
+interpretation -- "corresponding decrease" refers to neg interaction.
+
+```{r}
+m1 <- lm(glucose_uptake ~ genotype*stimulation, data = fig2j)
+coef(summary(m1)) %>%
+  kable() %>%
+  kable_styling()
+```
+
+
+Type I ss ANOVA
+```{r}
+anova(m1)
+```
+Type II 
+
+```{r}
+Anova(m1, type = "2")
+```
+
+Type III ANOVA
+
+```{r}
+type3 <- list(genotype = contr.sum,
+              stimulation = contr.sum)
+m1_type3 <- lm(glucose_uptake ~ genotype*stimulation,
+               data = fig2j,
+                contrasts = type3)
+Anova(m1_type3, type = "3")
+```
+Clearly the reported value for "genotype" is not 0.0152
+
+```{r}
+m1_emm <- emmeans(m1, specs = c("genotype", "stimulation"))
+m1_pairs <- contrast(m1_emm,
+                     method = "revpairwise",
+                     simple = "each",
+                     combine = TRUE,
+                     adjust = "none")
+plot_the_response(m1,
+                   m1_emm,
+                   m1_pairs)
+```
+
+
+# Fig 2i
+
+```{r}
+treatment_levels  <- c("WT Resting",
+                       "WT Stimulation",
+                       "Tlr9-/- Resting",
+                       "Tlr9-/- Stimulation")
+fig2i_wide <- read_excel(file_path,
+                         sheet = "2i",
+                         range = "A5:D16",
+                         col_names = TRUE) %>%
+  data.table()
+
+colnames(fig2i_wide) <- treatment_levels
+
+fig2i <- melt(fig2i_wide,
+              measure.vars = treatment_levels,
+              variable.name = "treatment",
+              value.name = "p_ampk") %>%
+  na.omit() # danger!
+
+fig2i[, c("genotype", "stimulation") := tstrsplit(treatment,
+                                                  " ",
+                                                  fixed = TRUE)]
+
+genotype_levels <- c("WT", "Tlr9-/-")
+stimulation_levels <- c("Resting", "Stimulation")
+fig2i[, genotype := factor(genotype,
+                           levels = genotype_levels)]
+fig2i[, stimulation := factor(stimulation,
+                              levels = stimulation_levels)]
+# View(fig2i)
+```
+
+What are the p-values? three reported
+
+1. (wt stim) - (wt relax) < 0.0001
+2. (Tlr9-/1 stim) - (Tlr9-/1 stim) = .1325
+3. (tlr9-/-)  - (wt) (genotype term in anova) = .0152
+
+```{r}
+m1 <- lm(p_ampk ~ genotype*stimulation, data = fig2i)
+coef(summary(m1)) %>%
+  kable() %>%
+  kable_styling()
+```
+
+Type I ss ANOVA
+
+```{r}
+anova(m1)
+```
+Type II 
+
+```{r}
+Anova(m1, type = "2")
+```
+
+Type III ANOVA
+
+```{r}
+type3 <- list(genotype = contr.sum,
+              stimulation = contr.sum)
+m1_type3 <- lm(p_ampk ~ genotype*stimulation,
+               data = fig2i,
+                contrasts = type3)
+Anova(m1_type3, type = "3")
+```
+
+```{r}
+m1_emm <- emmeans(m1, specs = c("genotype", "stimulation"))
+m1_pairs <- contrast(m1_emm,
+                     method = "revpairwise",
+                     simple = "each",
+                     combine = TRUE,
+                     adjust = "none")
+plot_the_response(m1,
+                   m1_emm,
+                   m1_pairs)
+```

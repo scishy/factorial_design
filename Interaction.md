@@ -8,7 +8,7 @@
                         range = "B1:Q436") %>%
       clean_names()  %>%
       data.table()
-      interaction_data <- interaction_data_table[c(6, 12, 19, 25, 27:30, 33:39, 41, 42, 44:46, 48, 50:55, 57:68, 72:82, 84:436),-c("jaw_tests", "comment")] #relevant rows
+      interaction_data <- interaction_data_table[c(5, 11, 18, 24, 26:29, 32:37, 40, 41, 43:45, 47, 49:54, 56:67, 71:81, 83:435),-c("jaw_tests", "comment")] #relevant rows & columns
       #na.omit() # danger!
 
     #View(interaction_data)

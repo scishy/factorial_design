@@ -8,35 +8,16 @@ output: md_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-# wrangling packages
 library(here)
 library(janitor)
 library(readxl)
 library(data.table)
-library(stringr)
+library(ggplot2)
 
-# analysis packages
-library(MASS) # glm.nb
-library(nlme)
-library(lmerTest)
-library(emmeans)
-library(boot)
-library(glmmTMB)
-library(car)
-library(DHARMa)
-
-# graphing packages
-library(ggsci)
-library(ggpubr)
-library(ggforce)
-library(cowplot)
-
+clean_names <- janitor::clean_names
 here <- here::here
 source_path <- here("R/ggplotsci.R")
 source(source_path)
-
-clean_names <- janitor::clean_names
-
 data_folder <- "data"
 
 ```
@@ -49,18 +30,31 @@ file_name <- "interaction - testing.xlsx"
 
 ```
 
+
 ```{r}
 
 file_path <- here(data_folder, data_from, file_name)
-
-interaction_data <- read_excel(file_path,
+interaction_data_table <- read_excel(file_path,
                     sheet = "Sheet1",
                     range = "B1:Q436") %>%
   clean_names()  %>%
   data.table()
-  #na.omit() # danger!
+  interaction_data <- interaction_data_table[c(5, 11, 18, 24, 26:29, 32:37, 40, 41, 43:45, 47, 49:54, 56:67, 71:81, 83:435),-c("jaw_tests", "comment")] #relevant rows & columns
 
 #View(interaction_data)
+  
+
+```
+
+
+```{r}
+table(interaction_data$data_availability)
+table(interaction_data$design)
+table(interaction_data$analysis)
+table(interaction_data$t_tests)
+table(interaction_data$tests)
+table(interaction_data$post_hoc)
+table(interaction_data$ixn_reported)
 ```
 
 

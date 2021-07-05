@@ -9,25 +9,72 @@
       clean_names()  %>%
       data.table()
       interaction_data <- interaction_data_table[c(5, 11, 18, 24, 26:29, 32:37, 40, 41, 43:45, 47, 49:54, 56:67, 71:81, 83:435),-c("jaw_tests", "comment")] #relevant rows & columns
-      #na.omit() # danger!
 
-    #View(interaction_data)
+    View(interaction_data)
 
-    #Import as csv
+    table(interaction_data$data_availability)
 
-    #data_folder <- "factorial_design"
+    ## 
+    ##  no yes 
+    ## 345  57
 
-    #data_from <- "Interaction"
-    #file_name <- "interaction - testing - Sheet1.csv"
-    #file_path <- here(data_folder, data_from, file_name)
+    table(interaction_data$design)
 
-    #Import CSV file
+    ## 
+    ##       2x2     2x2x2 2x2x2 + 2       3x2    3x2 +1     3x2+1     3x2x2       3x3 
+    ##       236         9         1        96         1         1         5         6 
+    ##       4x2       4x3     4x3x2       4x4       5x2       6x4 
+    ##        25        15         1         1         2         1
 
-    #interaction_data <- read.csv(file_path, header = TRUE, fileEncoding="UTF-8-BOM") %>%
-    #  data.table() %>%
-    #  clean_names()
+    table(interaction_data$analysis)
 
-    #View(interaction_data)
+    ## 
+    ## factorial      flat 
+    ##        56       305
+
+    table(interaction_data$t_tests)
+
+    ## 
+    ## combined separate 
+    ##      146      221
+
+    table(interaction_data$tests)
+
+    ## 
+    ##                                  anova                                 duncan 
+    ##                                     10                                      2 
+    ##                                dunnett generalized linear mixed-effects model 
+    ##                                      1                                      1 
+    ##                         kruskal-wallis             linear mixed-effects model 
+    ##                                      4                                      1 
+    ##                      mixed model anova                            moderated t 
+    ##                                      2                                      2 
+    ##                                    mww                          one-way anova 
+    ##                                     15                                     91 
+    ##        one-way anova repeated measures          one-way anova, kruskal-wallis 
+    ##                                      2                                      2 
+    ##                   one-way anova, tukey                                      t 
+    ##                                      5                                    166 
+    ##                                  tukey                          two-way anova 
+    ##                                      2                                     50 
+    ##        two-way anova repeated measures                                welch t 
+    ##                                      3                                      5 
+    ##                   wilcoxon signed-rank 
+    ##                                      4
+
+    table(interaction_data$post_hoc)
+
+    ## 
+    ##     bonferroni         duncan           dunn        dunnett     holm-sidak 
+    ##             36              2              2              4              2 
+    ##        scheffe          sidak sidak, dunnett              t          tukey 
+    ##              2             17              1              2             51
+
+    table(interaction_data$ixn_reported)
+
+    ## 
+    ##  no yes 
+    ## 361  11
 
     journal_vs_ixn_reported <- ggplot(data = interaction_data,
                                  aes(x =  ixn_reported,

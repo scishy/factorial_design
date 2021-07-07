@@ -1,49 +1,3 @@
-    knitr::opts_chunk$set(echo = TRUE)
-
-    library(here)
-
-    ## here() starts at C:/Users/Shylo/Documents/stats_proj/factorial_design
-
-    library(janitor)
-
-    ## 
-    ## Attaching package: 'janitor'
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     chisq.test, fisher.test
-
-    library(readxl)
-    library(data.table)
-    library(ggplot2)
-
-    clean_names <- janitor::clean_names
-    here <- here::here
-    source_path <- here("R/ggplotsci.R")
-    source(source_path)
-
-    ## 
-    ## Attaching package: 'insight'
-
-    ## The following object is masked _by_ '.GlobalEnv':
-    ## 
-    ##     clean_names
-
-    ## The following object is masked from 'package:janitor':
-    ## 
-    ##     clean_names
-
-    ## 
-    ## Attaching package: 'cowplot'
-
-    ## The following object is masked from 'package:ggpubr':
-    ## 
-    ##     get_legend
-
-    ## Loading required package: magrittr
-
-    data_folder <- "data"
-
     data_folder <- "factorial_design"
     data_from <- "Interaction"
     file_name <- "interaction - testing.xlsx"
@@ -57,11 +11,42 @@
     #relevant rows & columns
     interaction_data <- interaction_data_table[c(5, 11, 18, 24, 26:29, 32:37, 40, 41, 43:45, 47, 49:54, 56:67, 71:81, 83:435),-c("jaw_tests", "comment")] 
 
-
-    #data[cols] <- lapply(data[cols], factor)
     #View(interaction_data)
       
-    #summary(interaction_data)
+    summary(interaction_data)
+
+    ##    journal               year          issue           author         
+    ##  Length:402         Min.   :2019   Min.   :   1.0   Length:402        
+    ##  Class :character   1st Qu.:2019   1st Qu.:   2.0   Class :character  
+    ##  Mode  :character   Median :2019   Median :   5.0   Mode  :character  
+    ##                     Mean   :2019   Mean   : 229.2                     
+    ##                     3rd Qu.:2019   3rd Qu.:   9.0                     
+    ##                     Max.   :2019   Max.   :7789.0                     
+    ##                     NA's   :2      NA's   :27                         
+    ##     title              fig_id          data_availability     design         
+    ##  Length:402         Length:402         Length:402         Length:402        
+    ##  Class :character   Class :character   Class :character   Class :character  
+    ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+    ##                                                                             
+    ##                                                                             
+    ##                                                                             
+    ##                                                                             
+    ##  sample_size          analysis           t_tests             tests          
+    ##  Length:402         Length:402         Length:402         Length:402        
+    ##  Class :character   Class :character   Class :character   Class :character  
+    ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
+    ##                                                                             
+    ##                                                                             
+    ##                                                                             
+    ##                                                                             
+    ##    post_hoc         ixn_reported      
+    ##  Length:402         Length:402        
+    ##  Class :character   Class :character  
+    ##  Mode  :character   Mode  :character  
+    ##                                       
+    ##                                       
+    ##                                       
+    ## 
 
     table(interaction_data$data_availability)
 

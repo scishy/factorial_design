@@ -13,40 +13,7 @@
 
     #View(interaction_data)
       
-    summary(interaction_data)
-
-    ##    journal               year          issue           author         
-    ##  Length:402         Min.   :2019   Min.   :   1.0   Length:402        
-    ##  Class :character   1st Qu.:2019   1st Qu.:   2.0   Class :character  
-    ##  Mode  :character   Median :2019   Median :   5.0   Mode  :character  
-    ##                     Mean   :2019   Mean   : 229.2                     
-    ##                     3rd Qu.:2019   3rd Qu.:   9.0                     
-    ##                     Max.   :2019   Max.   :7789.0                     
-    ##                     NA's   :2      NA's   :27                         
-    ##     title              fig_id          data_availability     design         
-    ##  Length:402         Length:402         Length:402         Length:402        
-    ##  Class :character   Class :character   Class :character   Class :character  
-    ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##  sample_size          analysis           t_tests             tests          
-    ##  Length:402         Length:402         Length:402         Length:402        
-    ##  Class :character   Class :character   Class :character   Class :character  
-    ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##                                                                             
-    ##    post_hoc         ixn_reported      
-    ##  Length:402         Length:402        
-    ##  Class :character   Class :character  
-    ##  Mode  :character   Mode  :character  
-    ##                                       
-    ##                                       
-    ##                                       
-    ## 
+    #summary(interaction_data)
 
     table(interaction_data$data_availability)
 
@@ -118,6 +85,90 @@
 
 ## Example 3: Estimation of synergy (“More than the sum of the parts”)
 
+    interaction_data_subset <- interaction_data[, c('journal', 'data_availability', 'design', 'analysis', 't_tests', 'tests', 'post_hoc', 'ixn_reported')]
+
+
+    #Just in case
+    #
+    factor_columns <- c("journal", "data_availability", "design", "analysis", "t_tests", "tests", "post_hoc", "ixn_reported")
+    interaction_data_asfactor <- interaction_data_subset
+    interaction_data_asfactor[ , 
+                 (factor_columns) := lapply(.SD, as.factor),
+                 .SDcols = factor_columns]
+
+    #playing with heatmaps just because
+
+    interaction_1 <- ggplot(data = interaction_data, aes(x= data_availability, y = design  , fill = analysis)) +
+      geom_raster()
+
+    interaction_2 <- ggplot(data = interaction_data, aes(x= data_availability, y = ixn_reported  , fill = analysis)) +
+      geom_raster()
+
+    interaction_3 <- ggplot(data = interaction_data, aes(x= design, y = ixn_reported  , fill = analysis)) +
+      geom_raster()
+
+    interaction_4 <- ggplot(data = interaction_data, aes(x= tests, y = post_hoc  , fill = analysis)) +
+      geom_raster()
+
+    interaction_5 <- ggplot(data = interaction_data, aes(x= tests, y = ixn_reported  , fill = analysis)) +
+      geom_raster()
+
+    interaction_1
+
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+
+    interaction_2
+
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-5-2.png)
+
+    interaction_3
+
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-5-3.png)
+
+    interaction_4
+
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-5-4.png)
+
+    interaction_5
+
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-5-5.png)
+
+    interaction_data_asnumeric <- interaction_data_asfactor
+    interaction_data_asfactor[ , 
+                 (factor_columns) := lapply(.SD, as.numeric),
+                 .SDcols = factor_columns] %>%
+      data.table()
+
+    ##      journal data_availability design analysis t_tests tests post_hoc
+    ##   1:       6                 1      1        2       2     5       NA
+    ##   2:       6                 1      1        2       2     5       NA
+    ##   3:      33                 1      9        2       1    10       NA
+    ##   4:      33                 1      1        2       1    10       NA
+    ##   5:      16                 1      1        2       2    14       NA
+    ##  ---                                                                 
+    ## 398:      15                 1      1        2       2    14       NA
+    ## 399:      15                 1      1        2       2    NA       NA
+    ## 400:      15                 1      1        2       2    NA       NA
+    ## 401:      15                 1      1        2       2    14       NA
+    ## 402:      15                 1      1        2       2    14       NA
+    ##      ixn_reported
+    ##   1:            1
+    ##   2:            1
+    ##   3:            1
+    ##   4:            1
+    ##   5:            1
+    ##  ---             
+    ## 398:            1
+    ## 399:            1
+    ## 400:            1
+    ## 401:            1
+    ## 402:            1
+
+    interaction_data_asmatrix <- as.matrix(interaction_data_asnumeric)
+    heatmap(interaction_data_asmatrix)
+
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+
     journal_vs_ixn_reported <- ggplot(data = interaction_data,
                                  aes(x =  ixn_reported,
                                      y = journal,
@@ -127,7 +178,7 @@
 
     journal_vs_ixn_reported
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
     data_availability_vs_ixn_reported <- ggplot(data = interaction_data,
                                  aes(x =  ixn_reported,
@@ -138,7 +189,7 @@
 
     data_availability_vs_ixn_reported
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
     design_vs_ixn_reported <- ggplot(data = interaction_data,
                                  aes(x =  ixn_reported,
@@ -149,7 +200,7 @@
 
     design_vs_ixn_reported
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
     analysis_vs_ixn_reported <- ggplot(data = interaction_data,
                                  aes(x =  ixn_reported,
@@ -160,7 +211,7 @@
 
     analysis_vs_ixn_reported
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
     png( "mygraph1.png", width = 864, height = 864)
     p <- ggplot(interaction_data, aes(ixn_reported, analysis)) + geom_point()
@@ -181,7 +232,7 @@
 
     tests_vs_ixn_reported
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-10-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-13-1.png)
 
     t_tests_vs_ixn_reported <- ggplot(data = interaction_data,
                                  aes(x =  ixn_reported,
@@ -192,7 +243,7 @@
 
     t_tests_vs_ixn_reported
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-11-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-14-1.png)
 
     post_hoc_vs_ixn_reported <- ggplot(data = interaction_data,
                                  aes(x =  ixn_reported,
@@ -203,7 +254,7 @@
 
     post_hoc_vs_ixn_reported
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-12-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-15-1.png)
 
     journal_vs_data_availability <- ggplot(data = interaction_data,
                                  aes(x =  data_availability,
@@ -214,7 +265,7 @@
 
     journal_vs_data_availability
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-13-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-16-1.png)
 
     journal_vs_analysis_a <- ggplot(data = interaction_data,
                                  aes(x =  analysis,
@@ -225,7 +276,7 @@
 
     journal_vs_analysis_a
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-14-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-17-1.png)
 
     journal_vs_analysis_b <- ggplot(data = interaction_data,
                                  aes(x =  analysis,
@@ -236,7 +287,7 @@
 
     journal_vs_analysis_b
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-15-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-18-1.png)
 
     journal_vs_analysis_c <- ggplot(data = interaction_data,
                                  aes(x =  analysis,
@@ -247,7 +298,7 @@
 
     journal_vs_analysis_c
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-16-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-19-1.png)
 
     journal_vs_design <- ggplot(data = interaction_data,
                                  aes(x =  design,
@@ -258,7 +309,7 @@
 
     journal_vs_design
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-17-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-20-1.png)
 
     journal_vs_tests <- ggplot(data = interaction_data,
                                  aes(x =  tests,
@@ -269,7 +320,7 @@
 
     journal_vs_tests
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-18-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-21-1.png)
 
     journal_vs_post_hoc <- ggplot(data = interaction_data,
                                  aes(x =  post_hoc,
@@ -280,7 +331,7 @@
 
     journal_vs_post_hoc
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-19-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-22-1.png)
 
     journal_vs_t_tests <- ggplot(data = interaction_data,
                                  aes(x =  t_tests,
@@ -291,7 +342,7 @@
 
     journal_vs_t_tests
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-20-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-23-1.png)
 
     design_vs_data_availability <- ggplot(data = interaction_data,
                                  aes(x =  data_availability,
@@ -302,7 +353,7 @@
 
     design_vs_data_availability 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-21-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-24-1.png)
 
     analysis_vs_data_availability <- ggplot(data = interaction_data,
                                  aes(x =  data_availability,
@@ -313,7 +364,7 @@
 
     analysis_vs_data_availability 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-22-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-25-1.png)
 
     tests_vs_data_availability <- ggplot(data = interaction_data,
                                  aes(x =  data_availability,
@@ -324,7 +375,7 @@
 
     tests_vs_data_availability 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-23-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-26-1.png)
 
     post_hoc_vs_data_availability <- ggplot(data = interaction_data,
                                  aes(x =  data_availability,
@@ -335,7 +386,7 @@
 
     post_hoc_vs_data_availability 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-24-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-27-1.png)
 
     t_tests_vs_data_availability <- ggplot(data = interaction_data,
                                  aes(x =  data_availability,
@@ -346,7 +397,7 @@
 
     t_tests_vs_data_availability 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-25-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-28-1.png)
 
     design_vs_analysis_a <- ggplot(data = interaction_data,
                                  aes(x =  analysis,
@@ -357,7 +408,7 @@
 
     design_vs_analysis_a
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-26-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-29-1.png)
 
     design_vs_analysis_b <- ggplot(data = interaction_data,
                                  aes(x =  analysis,
@@ -368,7 +419,7 @@
 
     design_vs_analysis_b
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-27-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-30-1.png)
 
     design_vs_tests <- ggplot(data = interaction_data,
                                  aes(x =  tests,
@@ -379,7 +430,7 @@
 
     design_vs_tests
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-28-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-31-1.png)
 
     design_vs_post_hoc <- ggplot(data = interaction_data,
                                  aes(x =  post_hoc,
@@ -390,7 +441,7 @@
 
     design_vs_post_hoc
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-29-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-32-1.png)
 
     design_vs_t_tests <- ggplot(data = interaction_data,
                                  aes(x =  t_tests,
@@ -401,7 +452,7 @@
 
     design_vs_t_tests
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-30-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-33-1.png)
 
     tests_vs_analysis <- ggplot(data = interaction_data,
                                  aes(x =  analysis,
@@ -412,7 +463,7 @@
 
     tests_vs_analysis
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-31-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-34-1.png)
 
     post_hoc_vs_analysis <- ggplot(data = interaction_data,
                                  aes(x =  analysis,
@@ -423,7 +474,7 @@
 
     post_hoc_vs_analysis
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-32-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-35-1.png)
 
     t_tests_vs_analysis <- ggplot(data = interaction_data,
                                  aes(x =  analysis,
@@ -434,7 +485,7 @@
 
     t_tests_vs_analysis
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-33-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-36-1.png)
 
     tests_vs_t_tests <- ggplot(data = interaction_data,
                                  aes(x =  t_tests,
@@ -445,7 +496,7 @@
 
     tests_vs_t_tests
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-34-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-37-1.png)
 
     post_hoc_vs_t_tests <- ggplot(data = interaction_data,
                                  aes(x =  t_tests,
@@ -456,4 +507,4 @@
 
     post_hoc_vs_t_tests
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-35-1.png)
+![](Interaction_files/figure-markdown_strict/unnamed-chunk-38-1.png)

@@ -1,510 +1,1271 @@
-    data_folder <- "factorial_design"
-    data_from <- "Interaction"
-    file_name <- "interaction - testing.xlsx"
-
-    file_path <- here(data_folder, data_from, file_name)
-    interaction_data_table <- read_excel(file_path,
-                        sheet = "Sheet1",
-                        range = "B1:Q436") %>%
-      clean_names()  %>%
-      data.table()
-    #relevant rows & columns
-    interaction_data <- interaction_data_table[c(5, 11, 18, 24, 26:29, 32:37, 40, 41, 43:45, 47, 49:54, 56:67, 71:81, 83:435),-c("jaw_tests", "comment")] 
-
-    #View(interaction_data)
-      
-    #summary(interaction_data)
-
-    table(interaction_data$data_availability)
-
-    ## 
-    ##  no yes 
-    ## 345  57
-
-    table(interaction_data$design)
-
-    ## 
-    ##       2x2     2x2x2 2x2x2 + 2       3x2    3x2 +1     3x2+1     3x2x2       3x3 
-    ##       236         9         1        96         1         1         5         6 
-    ##       4x2       4x3     4x3x2       4x4       5x2       6x4 
-    ##        25        15         1         1         2         1
-
-    table(interaction_data$analysis)
-
-    ## 
-    ## factorial      flat 
-    ##        56       305
-
-    table(interaction_data$t_tests)
-
-    ## 
-    ## combined separate 
-    ##      146      221
-
-    table(interaction_data$tests)
-
-    ## 
-    ##                                  anova                                 duncan 
-    ##                                     10                                      2 
-    ##                                dunnett generalized linear mixed-effects model 
-    ##                                      1                                      1 
-    ##                         kruskal-wallis             linear mixed-effects model 
-    ##                                      4                                      1 
-    ##                      mixed model anova                            moderated t 
-    ##                                      2                                      2 
-    ##                                    mww                          one-way anova 
-    ##                                     15                                     91 
-    ##        one-way anova repeated measures          one-way anova, kruskal-wallis 
-    ##                                      2                                      2 
-    ##                   one-way anova, tukey                                      t 
-    ##                                      5                                    166 
-    ##                                  tukey                          two-way anova 
-    ##                                      2                                     50 
-    ##        two-way anova repeated measures                                welch t 
-    ##                                      3                                      5 
-    ##                   wilcoxon signed-rank 
-    ##                                      4
-
-    table(interaction_data$post_hoc)
-
-    ## 
-    ##     bonferroni         duncan           dunn        dunnett     holm-sidak 
-    ##             36              2              2              4              2 
-    ##        scheffe          sidak sidak, dunnett              t          tukey 
-    ##              2             17              1              2             51
-
-    table(interaction_data$ixn_reported)
-
-    ## 
-    ##  no yes 
-    ## 361  11
-
-## Example 1: Estimation of a treatment effect relative to a control effect (“Something different”)
-
-## Example 2: Estimation of the effect of background condition on an effect (“it depends”)
-
-## Example 3: Estimation of synergy (“More than the sum of the parts”)
-
-    interaction_data_subset <- interaction_data[, c('journal', 'data_availability', 'design', 'analysis', 't_tests', 'tests', 'post_hoc', 'ixn_reported')]
+---
+title: "Interaction"
+author: "Shylo Burrell"
+date: "08/10/2021"
+output: 
+  html_document:
+    keep_md: TRUE
+---
 
 
-    #Just in case
-    #
-    factor_columns <- c("journal", "data_availability", "design", "analysis", "t_tests", "tests", "post_hoc", "ixn_reported")
-    interaction_data_asfactor <- interaction_data_subset
-    interaction_data_asfactor[ , 
-                 (factor_columns) := lapply(.SD, as.factor),
-                 .SDcols = factor_columns]
 
-    #playing with heatmaps just because
 
-    interaction_1 <- ggplot(data = interaction_data, aes(x= data_availability, y = design  , fill = analysis)) +
-      geom_raster()
+```r
+data_folder <- "factorial_design"
+data_from <- "Interaction"
+file_name <- "interaction - testing.xlsx"
+```
 
-    interaction_2 <- ggplot(data = interaction_data, aes(x= data_availability, y = ixn_reported  , fill = analysis)) +
-      geom_raster()
 
-    interaction_3 <- ggplot(data = interaction_data, aes(x= design, y = ixn_reported  , fill = analysis)) +
-      geom_raster()
 
-    interaction_4 <- ggplot(data = interaction_data, aes(x= tests, y = post_hoc  , fill = analysis)) +
-      geom_raster()
+```r
+#import data and create data table
 
-    interaction_5 <- ggplot(data = interaction_data, aes(x= tests, y = ixn_reported  , fill = analysis)) +
-      geom_raster()
+file_path <- here(data_folder, data_from, file_name)
+interaction_data_raw <- read_excel(file_path,
+                                     sheet = "Sheet1",
+                                     range = "A1:Z476") %>%
+  clean_names()  %>%
+  data.table()
+#View(interaction_data_table)
+#relevant rows & columns
+interaction_data <- interaction_data_raw[
+  include == "yes", 
+  !c(
+    "include","doi", "quartile", "year", "issue", "jaw_tests", "jaw", "smb", "comment", "report",  "synergy_used", "antagonism_used",  "ixn_to_support_syn_ant"
+    )]
 
-    interaction_1
+#add new column combining all tests performed
+interaction_data$all_tests <- paste(interaction_data$tests, interaction_data$post_hoc, sep = ",")
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+#View(interaction_data)
+```
 
-    interaction_2
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-5-2.png)
 
-    interaction_3
+```r
+design_summary <- table(interaction_data$design)
+kable(design_summary, col.names = c("design", "freq")) %>%
+  kable_styling()
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-5-3.png)
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> design </th>
+   <th style="text-align:right;"> freq </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 2x2 </td>
+   <td style="text-align:right;"> 249 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2x2x2 </td>
+   <td style="text-align:right;"> 9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2x2x2+1 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3x2 </td>
+   <td style="text-align:right;"> 103 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3x2+1 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3x2x2 </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3x3 </td>
+   <td style="text-align:right;"> 6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 4x2 </td>
+   <td style="text-align:right;"> 26 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 4x3 </td>
+   <td style="text-align:right;"> 16 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 4x3x2 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 4x4 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 5x2 </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 6x4 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+</tbody>
+</table>
 
-    interaction_4
+```r
+data_availability_summary <- table(interaction_data$data_availability)
+kable(data_availability_summary, col.names = c("data_availability", "freq")) %>%
+  kable_styling()
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-5-4.png)
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> data_availability </th>
+   <th style="text-align:right;"> freq </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> no </td>
+   <td style="text-align:right;"> 365 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> yes </td>
+   <td style="text-align:right;"> 57 </td>
+  </tr>
+</tbody>
+</table>
 
-    interaction_5
+```r
+analysis_summary <- table(interaction_data$analysis)
+kable(analysis_summary, col.names = c("analysis", "freq")) %>%
+  kable_styling()
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-5-5.png)
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> analysis </th>
+   <th style="text-align:right;"> freq </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> factorial </td>
+   <td style="text-align:right;"> 54 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> flat </td>
+   <td style="text-align:right;"> 325 </td>
+  </tr>
+</tbody>
+</table>
 
-    interaction_data_asnumeric <- interaction_data_asfactor
-    interaction_data_asfactor[ , 
-                 (factor_columns) := lapply(.SD, as.numeric),
-                 .SDcols = factor_columns] %>%
-      data.table()
+```r
+t_tests_summary <- table(interaction_data$t_tests)
+kable(t_tests_summary, col.names = c("t_tests", "freq")) %>%
+  kable_styling()
+```
 
-    ##      journal data_availability design analysis t_tests tests post_hoc
-    ##   1:       6                 1      1        2       2     5       NA
-    ##   2:       6                 1      1        2       2     5       NA
-    ##   3:      33                 1      9        2       1    10       NA
-    ##   4:      33                 1      1        2       1    10       NA
-    ##   5:      16                 1      1        2       2    14       NA
-    ##  ---                                                                 
-    ## 398:      15                 1      1        2       2    14       NA
-    ## 399:      15                 1      1        2       2    NA       NA
-    ## 400:      15                 1      1        2       2    NA       NA
-    ## 401:      15                 1      1        2       2    14       NA
-    ## 402:      15                 1      1        2       2    14       NA
-    ##      ixn_reported
-    ##   1:            1
-    ##   2:            1
-    ##   3:            1
-    ##   4:            1
-    ##   5:            1
-    ##  ---             
-    ## 398:            1
-    ## 399:            1
-    ## 400:            1
-    ## 401:            1
-    ## 402:            1
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> t_tests </th>
+   <th style="text-align:right;"> freq </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> combined </td>
+   <td style="text-align:right;"> 160 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> separate </td>
+   <td style="text-align:right;"> 219 </td>
+  </tr>
+</tbody>
+</table>
 
-    interaction_data_asmatrix <- as.matrix(interaction_data_asnumeric)
-    heatmap(interaction_data_asmatrix)
+```r
+tests_summary <- table(interaction_data$tests)
+kable(tests_summary, col.names = c("tests", "freq")) %>%
+  kable_styling()
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> tests </th>
+   <th style="text-align:right;"> freq </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> anova </td>
+   <td style="text-align:right;"> 21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> duncan </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> dunnett </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> generalized linear mixed-effects model </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> kruskal-wallis </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> linear mixed-effects model </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> moderated t </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> mww </td>
+   <td style="text-align:right;"> 19 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova </td>
+   <td style="text-align:right;"> 105 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova repeated measures </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova, kruskal-wallis </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova, tukey </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> paired-sample t test </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t </td>
+   <td style="text-align:right;"> 173 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> tukey </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova </td>
+   <td style="text-align:right;"> 50 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova repeated measures </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> welch t </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+</tbody>
+</table>
 
-    journal_vs_ixn_reported <- ggplot(data = interaction_data,
-                                 aes(x =  ixn_reported,
-                                     y = journal,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+```r
+all_tests_summary <- table(interaction_data$all_tests)
+kable(all_tests_summary, col.names = c("all_tests", "freq")) %>%
+  kable_styling()
+```
 
-    journal_vs_ixn_reported
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> all_tests </th>
+   <th style="text-align:right;"> freq </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> anova,bonferroni </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> anova,missing </td>
+   <td style="text-align:right;"> 9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> anova,NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> anova,sidak </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> anova,snk </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> anova,tukey </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> duncan,NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> dunnett,NA </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> generalized linear mixed-effects model,NA </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> kruskal-wallis,dunn </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> kruskal-wallis,missing </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> linear mixed-effects model,NA </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> moderated t,NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> mww,NA </td>
+   <td style="text-align:right;"> 19 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA,NA </td>
+   <td style="text-align:right;"> 28 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova repeated measures,missing </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova, kruskal-wallis,NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova, tukey,tukey </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,bonferroni </td>
+   <td style="text-align:right;"> 27 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,duncan </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,dunnett </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,missing </td>
+   <td style="text-align:right;"> 26 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,scheffe </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,sidak </td>
+   <td style="text-align:right;"> 6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,snk </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,t </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,tukey </td>
+   <td style="text-align:right;"> 36 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> paired-sample t test,NA </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,NA </td>
+   <td style="text-align:right;"> 173 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> tukey,NA </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova repeated measures,bonferroni </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova repeated measures,sidak </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,bonferroni </td>
+   <td style="text-align:right;"> 10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,dunnett </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,holm-sidak </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,missing </td>
+   <td style="text-align:right;"> 13 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,sidak </td>
+   <td style="text-align:right;"> 8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,sidak's multiple comparison </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,sidak, dunnett </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,tukey </td>
+   <td style="text-align:right;"> 13 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> welch t,NA </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+</tbody>
+</table>
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+```r
+post_hoc_summary <- table(interaction_data$post_hoc)
+kable(post_hoc_summary, col.names = c("post_hoc", "freq")) %>%
+  kable_styling()
+```
 
-    data_availability_vs_ixn_reported <- ggplot(data = interaction_data,
-                                 aes(x =  ixn_reported,
-                                     y = data_availability,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> post_hoc </th>
+   <th style="text-align:right;"> freq </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> bonferroni </td>
+   <td style="text-align:right;"> 41 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> duncan </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> dunn </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> dunnett </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> holm-sidak </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> missing </td>
+   <td style="text-align:right;"> 52 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> scheffe </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> sidak </td>
+   <td style="text-align:right;"> 17 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> sidak's multiple comparison </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> sidak, dunnett </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> snk </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> tukey </td>
+   <td style="text-align:right;"> 55 </td>
+  </tr>
+</tbody>
+</table>
 
-    data_availability_vs_ixn_reported
+```r
+ixn_reported_summary <- table(interaction_data$ixn_reported)
+kable(ixn_reported_summary, col.names = c("ixn_reported", "freq")) %>%
+  kable_styling()
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-8-1.png)
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> ixn_reported </th>
+   <th style="text-align:right;"> freq </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> no </td>
+   <td style="text-align:right;"> 378 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> yes </td>
+   <td style="text-align:right;"> 12 </td>
+  </tr>
+</tbody>
+</table>
 
-    design_vs_ixn_reported <- ggplot(data = interaction_data,
+### Pairwise comparisons
+
+design by journal
+
+```r
+journal_vs_design <- ggplot(data = interaction_data,
+                            aes(x =  design,
+                                y = journal,
+                                color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.text.y = element_blank())
+
+journal_vs_design
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+data availability by journal
+
+```r
+journal_vs_data_availability <- ggplot(data = interaction_data,
+                                       aes(x =  data_availability,
+                                           y = journal,
+                                           color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+    theme(axis.text.y = element_blank())
+
+journal_vs_data_availability
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+
+journal vs analysis
+
+```r
+journal_vs_analysis <- ggplot(data = interaction_data,
+                                aes(x =  analysis,
+                                    y = journal,
+                                    color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+    theme(axis.text.y = element_blank())
+
+journal_vs_analysis
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
+
+
+t tests by journal
+
+```r
+journal_vs_t_tests <- ggplot(data = interaction_data,
+                             aes(x =  t_tests,
+                                 y = journal,
+                                 color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+  theme(axis.text.y = element_blank())
+
+journal_vs_t_tests
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
+tests by journal
+
+```r
+journal_vs_tests <- ggplot(data = interaction_data,
+                           aes(x =  tests,
+                               y = journal,
+                               color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+  #theme(axis.text.x = element_text(angle = 90, hjust = 1)) #to view test names
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank())
+
+journal_vs_tests
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
+post hoc by journal
+
+```r
+journal_vs_post_hoc <- ggplot(data = interaction_data,
+                              aes(x =  post_hoc,
+                                  y = journal,
+                                  color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.text.y = element_blank())
+
+journal_vs_post_hoc
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
+all tests by journal
+
+```r
+journal_vs_all_tests <- ggplot(data = interaction_data,
+                           aes(x =  all_tests,
+                               y = journal,
+                               color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+  #theme(axis.text.x = element_text(angle = 90, hjust = 1)) #to view test names
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_blank())
+
+journal_vs_all_tests
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
+interaction by journal
+
+```r
+journal_vs_ixn_reported <- ggplot(data = interaction_data,
+                                  aes(x =  ixn_reported,
+                                      y = journal,
+                                      color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+  theme(axis.text.y = element_blank())
+
+journal_vs_ixn_reported
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+
+design by rank
+
+```r
+rank_vs_design <- ggplot(data = interaction_data,
+                                  aes(x =  design,
+                                      y = rank,
+                                      color = journal)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = FALSE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+rank_vs_design
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+
+
+data availability by rank
+
+```r
+rank_vs_data_availability <- ggplot(data = interaction_data,
+                                  aes(x = data_availability,
+                                      y = rank,
+                                      color = journal)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = FALSE) 
+
+rank_vs_data_availability
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+
+analysis by rank
+
+```r
+rank_vs_analysis <- ggplot(data = interaction_data,
+                                  aes(x = analysis,
+                                      y = rank,
+                                      color = journal)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = FALSE) 
+
+rank_vs_analysis
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+
+t tests by rank
+
+```r
+rank_vs_t_tests <- ggplot(data = interaction_data,
+                                  aes(x = t_tests,
+                                      y = rank,
+                                      color = journal)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = FALSE) 
+
+rank_vs_t_tests
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+tests by rank
+
+```r
+rank_vs_tests <- ggplot(data = interaction_data,
+                                  aes(x = tests,
+                                      y = rank,
+                                      color = journal)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = FALSE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+rank_vs_tests
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+
+post hoc by rank
+
+```r
+rank_vs_post_hoc <- ggplot(data = interaction_data,
+                                  aes(x = post_hoc,
+                                      y = rank,
+                                      color = journal)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = FALSE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+rank_vs_post_hoc
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+
+all tests by rank
+
+```r
+rank_vs_all_tests <- ggplot(data = interaction_data,
+                                  aes(x = all_tests,
+                                      y = rank,
+                                      color = journal)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = FALSE) +
+  theme(axis.text.x = element_blank())
+#axis.text.x = element_text(angle = 90, hjust = 1))
+
+rank_vs_all_tests
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+
+interaction reported by rank
+
+```r
+rank_vs_ixn_reported<- ggplot(data = interaction_data,
+                                  aes(x = ixn_reported,
+                                      y = rank,
+                                      color = journal)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = FALSE) 
+
+rank_vs_ixn_reported
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+
+design vs data availability (color by journal)
+
+```r
+design_vs_data_availability_a <- ggplot(data = interaction_data,
+                                      aes(x =  data_availability,
+                                          y = design,
+                                          color = journal)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = FALSE) 
+
+design_vs_data_availability_a 
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+
+design vs data availability (color by rank)
+
+```r
+design_vs_data_availability <- ggplot(data = interaction_data,
+                                      aes(x =  data_availability,
+                                          y = design,
+                                          color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
+
+design_vs_data_availability 
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+
+design vs analysis
+
+```r
+design_vs_analysis_a <- ggplot(data = interaction_data,
+                               aes(x =  analysis,
+                                   y = design,
+                                   color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = FALSE) 
+
+design_vs_analysis_a
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+
+design vs analysis (color by tests)
+
+```r
+design_vs_analysis_b <- ggplot(data = interaction_data,
+                               aes(x =  analysis,
+                                   y = design,
+                                   color = tests)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = FALSE) 
+
+design_vs_analysis_b
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+
+design vs t tests
+
+```r
+design_vs_t_tests <- ggplot(data = interaction_data,
+                            aes(x =  t_tests,
+                                y = design,
+                                color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
+
+design_vs_t_tests
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
+
+
+design vs tests (color by rank)
+
+```r
+design_vs_tests <- ggplot(data = interaction_data,
+                            aes(x = tests,
+                                y = design,
+                                color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+design_vs_tests
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+
+design vs post hoc
+
+```r
+design_vs_post_hoc <- ggplot(data = interaction_data,
+                             aes(x =  post_hoc,
+                                 y = design,
+                                 color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+design_vs_post_hoc
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
+design vs all tests (color by rank)
+
+```r
+design_vs_all_tests <- ggplot(data = interaction_data,
+                            aes(x = all_tests,
+                                y = design,
+                                color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+  theme(axis.text.x = element_blank())
+    #axis.text.x = element_text(angle = 90, hjust = 1))
+
+design_vs_all_tests
+```
+
+![](Interaction_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
+
+design vs interaction reported
+
+
+```r
+design_vs_ixn_reported <- ggplot(data = interaction_data,
                                  aes(x =  ixn_reported,
                                      y = design,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+                                     color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    design_vs_ixn_reported
+design_vs_ixn_reported
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-9-1.png)
+![](Interaction_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
 
-    analysis_vs_ixn_reported <- ggplot(data = interaction_data,
-                                 aes(x =  ixn_reported,
-                                     y = analysis,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
 
-    analysis_vs_ixn_reported
+data availability by analysis
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-10-1.png)
+```r
+analysis_vs_data_availability <- ggplot(data = interaction_data,
+                                        aes(x =  data_availability,
+                                            y = analysis,
+                                            color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    png( "mygraph1.png", width = 864, height = 864)
-    p <- ggplot(interaction_data, aes(ixn_reported, analysis)) + geom_point()
+analysis_vs_data_availability 
+```
 
-    p + facet_grid(vars(data_availability), vars(design))
+![](Interaction_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
 
-    png( "mygraph2.png", width = 2304, height = 1536)
-    p <- ggplot(interaction_data, aes(ixn_reported, analysis)) + geom_point()
+data availability by t tests
 
-    p + facet_grid(vars(design), vars(journal))
+```r
+t_tests_vs_data_availability <- ggplot(data = interaction_data,
+                                       aes(x =  data_availability,
+                                           y = t_tests,
+                                           color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    tests_vs_ixn_reported <- ggplot(data = interaction_data,
-                                 aes(x =  ixn_reported,
-                                     y = tests,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+t_tests_vs_data_availability 
+```
 
-    tests_vs_ixn_reported
+![](Interaction_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-13-1.png)
+data availability by tests
 
-    t_tests_vs_ixn_reported <- ggplot(data = interaction_data,
-                                 aes(x =  ixn_reported,
-                                     y = t_tests,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+```r
+tests_vs_data_availability <- ggplot(data = interaction_data,
+                                     aes(x =  data_availability,
+                                         y = tests,
+                                         color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    t_tests_vs_ixn_reported
+tests_vs_data_availability 
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-14-1.png)
+![](Interaction_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
 
-    post_hoc_vs_ixn_reported <- ggplot(data = interaction_data,
-                                 aes(x =  ixn_reported,
-                                     y = post_hoc,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+data availability by post hoc
 
-    post_hoc_vs_ixn_reported
+```r
+post_hoc_vs_data_availability <- ggplot(data = interaction_data,
+                                        aes(x =  data_availability,
+                                            y = post_hoc,
+                                            color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-15-1.png)
+post_hoc_vs_data_availability 
+```
 
-    journal_vs_data_availability <- ggplot(data = interaction_data,
-                                 aes(x =  data_availability,
-                                     y = journal,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+![](Interaction_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
-    journal_vs_data_availability
+data availability by all tests
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-16-1.png)
+```r
+all_tests_vs_data_availability <- ggplot(data = interaction_data,
+                                     aes(x =  data_availability,
+                                         y = all_tests,
+                                         color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    journal_vs_analysis_a <- ggplot(data = interaction_data,
-                                 aes(x =  analysis,
-                                     y = journal,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+all_tests_vs_data_availability 
+```
 
-    journal_vs_analysis_a
+![](Interaction_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-17-1.png)
+data availability vs interaction reported
 
-    journal_vs_analysis_b <- ggplot(data = interaction_data,
-                                 aes(x =  analysis,
-                                     y = journal,
-                                     color = tests)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+```r
+data_availability_vs_ixn_reported <- ggplot(data = interaction_data,
+                                            aes(x =  ixn_reported,
+                                                y = data_availability,
+                                                color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    journal_vs_analysis_b
+data_availability_vs_ixn_reported
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-18-1.png)
+![](Interaction_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
 
-    journal_vs_analysis_c <- ggplot(data = interaction_data,
-                                 aes(x =  analysis,
-                                     y = journal,
-                                     color = design)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+analysis by t tests
 
-    journal_vs_analysis_c
+```r
+t_tests_vs_analysis <- ggplot(data = interaction_data,
+                              aes(x =  analysis,
+                                  y = t_tests,
+                                  color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-19-1.png)
+t_tests_vs_analysis
+```
 
-    journal_vs_design <- ggplot(data = interaction_data,
-                                 aes(x =  design,
-                                     y = journal,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+![](Interaction_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
 
-    journal_vs_design
+analysis by tests
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-20-1.png)
+```r
+tests_vs_analysis <- ggplot(data = interaction_data,
+                            aes(x =  analysis,
+                                y = tests,
+                                color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    journal_vs_tests <- ggplot(data = interaction_data,
-                                 aes(x =  tests,
-                                     y = journal,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+tests_vs_analysis
+```
 
-    journal_vs_tests
+![](Interaction_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-21-1.png)
+analysis by post hoc
 
-    journal_vs_post_hoc <- ggplot(data = interaction_data,
-                                 aes(x =  post_hoc,
-                                     y = journal,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+```r
+post_hoc_vs_analysis <- ggplot(data = interaction_data,
+                               aes(x =  analysis,
+                                   y = post_hoc,
+                                   color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    journal_vs_post_hoc
+post_hoc_vs_analysis
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-22-1.png)
+![](Interaction_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
 
-    journal_vs_t_tests <- ggplot(data = interaction_data,
-                                 aes(x =  t_tests,
-                                     y = journal,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+analysis by all tests
 
-    journal_vs_t_tests
+```r
+all_tests_vs_analysis <- ggplot(data = interaction_data,
+                            aes(x =  analysis,
+                                y = all_tests,
+                                color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-23-1.png)
+all_tests_vs_analysis
+```
 
-    design_vs_data_availability <- ggplot(data = interaction_data,
-                                 aes(x =  data_availability,
-                                     y = design,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+![](Interaction_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
 
-    design_vs_data_availability 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-24-1.png)
+analysis vs interaction reported
 
-    analysis_vs_data_availability <- ggplot(data = interaction_data,
-                                 aes(x =  data_availability,
-                                     y = analysis,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+```r
+analysis_vs_ixn_reported <- ggplot(data = interaction_data,
+                                   aes(x =  ixn_reported,
+                                       y = analysis,
+                                       color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    analysis_vs_data_availability 
+analysis_vs_ixn_reported
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-25-1.png)
+![](Interaction_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
 
-    tests_vs_data_availability <- ggplot(data = interaction_data,
-                                 aes(x =  data_availability,
-                                     y = tests,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+t tests vs tests
 
-    tests_vs_data_availability 
+```r
+tests_vs_t_tests <- ggplot(data = interaction_data,
+                           aes(x =  t_tests,
+                               y = tests,
+                               color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-26-1.png)
+tests_vs_t_tests
+```
 
-    post_hoc_vs_data_availability <- ggplot(data = interaction_data,
-                                 aes(x =  data_availability,
-                                     y = post_hoc,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+![](Interaction_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
 
-    post_hoc_vs_data_availability 
+t tests vs post hoc
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-27-1.png)
+```r
+t_tests_vs_post_hoc <- ggplot(data = interaction_data,
+                                  aes(x =  post_hoc,
+                                      y = t_tests,
+                                      color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ 
+t_tests_vs_post_hoc
+```
 
-    t_tests_vs_data_availability <- ggplot(data = interaction_data,
-                                 aes(x =  data_availability,
-                                     y = t_tests,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+![](Interaction_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
 
-    t_tests_vs_data_availability 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-28-1.png)
+all tests vs t tests
 
-    design_vs_analysis_a <- ggplot(data = interaction_data,
-                                 aes(x =  analysis,
-                                     y = design,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+```r
+all_tests_vs_t_tests <- ggplot(data = interaction_data,
+                           aes(x =  t_tests,
+                               y = all_tests,
+                               color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    design_vs_analysis_a
+all_tests_vs_t_tests
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-29-1.png)
+![](Interaction_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
 
-    design_vs_analysis_b <- ggplot(data = interaction_data,
-                                 aes(x =  analysis,
-                                     y = design,
-                                     color = tests)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+t tests vs interaction reported
 
-    design_vs_analysis_b
+```r
+t_tests_vs_ixn_reported <- ggplot(data = interaction_data,
+                                  aes(x =  ixn_reported,
+                                      y = t_tests,
+                                      color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-30-1.png)
+t_tests_vs_ixn_reported
+```
 
-    design_vs_tests <- ggplot(data = interaction_data,
-                                 aes(x =  tests,
-                                     y = design,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+![](Interaction_files/figure-html/unnamed-chunk-43-1.png)<!-- -->
 
-    design_vs_tests
+tests vs post hoc
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-31-1.png)
+```r
+tests_vs_post_hoc <- ggplot(data = interaction_data,
+                                aes(x =  post_hoc,
+                                    y = tests,
+                                    color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 
-    design_vs_post_hoc <- ggplot(data = interaction_data,
-                                 aes(x =  post_hoc,
-                                     y = design,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+tests_vs_post_hoc
+```
 
-    design_vs_post_hoc
+![](Interaction_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-32-1.png)
+tests vs interaction reported
 
-    design_vs_t_tests <- ggplot(data = interaction_data,
-                                 aes(x =  t_tests,
-                                     y = design,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+```r
+tests_vs_ixn_reported <- ggplot(data = interaction_data,
+                                aes(x =  ixn_reported,
+                                    y = tests,
+                                    color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    design_vs_t_tests
+tests_vs_ixn_reported
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-33-1.png)
+![](Interaction_files/figure-html/unnamed-chunk-45-1.png)<!-- -->
 
-    tests_vs_analysis <- ggplot(data = interaction_data,
-                                 aes(x =  analysis,
-                                     y = tests,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
 
-    tests_vs_analysis
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-34-1.png)
+```r
+post_hoc_vs_ixn_reported <- ggplot(data = interaction_data,
+                                   aes(x =  ixn_reported,
+                                       y = post_hoc,
+                                       color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-    post_hoc_vs_analysis <- ggplot(data = interaction_data,
-                                 aes(x =  analysis,
-                                     y = post_hoc,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+post_hoc_vs_ixn_reported
+```
 
-    post_hoc_vs_analysis
+![](Interaction_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-35-1.png)
 
-    t_tests_vs_analysis <- ggplot(data = interaction_data,
-                                 aes(x =  analysis,
-                                     y = t_tests,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+all tests vs interaction reported
 
-    t_tests_vs_analysis
+```r
+all_tests_vs_ixn_reported <- ggplot(data = interaction_data,
+                                aes(x =  ixn_reported,
+                                    y = all_tests,
+                                    color = rank)) +
+  geom_point(alpha = 0.5, show.legend = FALSE) +
+  geom_jitter(width = 0.3, show.legend = TRUE) 
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-36-1.png)
+all_tests_vs_ixn_reported
+```
 
-    tests_vs_t_tests <- ggplot(data = interaction_data,
-                                 aes(x =  t_tests,
-                                     y = tests,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+![](Interaction_files/figure-html/unnamed-chunk-47-1.png)<!-- -->
 
-    tests_vs_t_tests
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-37-1.png)
 
-    post_hoc_vs_t_tests <- ggplot(data = interaction_data,
-                                 aes(x =  t_tests,
-                                     y = post_hoc,
-                                     color = journal)) +
-      geom_point(alpha = 0.5, show.legend = FALSE) +
-      geom_jitter(width = 0.3, show.legend = FALSE) 
+```r
+#png( "mygraph1.png", width = 864, height = 864)
+#p <- ggplot(interaction_data, aes(ixn_reported, analysis)) + geom_point()
 
-    post_hoc_vs_t_tests
+#p + facet_grid(vars(data_availability), vars(design))
+```
 
-![](Interaction_files/figure-markdown_strict/unnamed-chunk-38-1.png)
+
+```r
+#png( "mygraph2.png", width = 2304, height = 1536)
+#p <- ggplot(interaction_data, aes(ixn_reported, analysis)) + geom_point()
+
+#p + facet_grid(vars(design), vars(journal))
+```
+
+
+
+Example 1: Estimation of a treatment effect relative to a control effect (“Something different”)  
+Example 2: Estimation of the effect of background condition on an effect (“it depends”)  
+Example 3: Estimation of synergy (“More than the sum of the parts”)  

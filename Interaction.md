@@ -36,9 +36,8 @@ interaction_data <- interaction_data_raw[
     )]
 
 #add new column combining all tests performed
-interaction_data$all_tests <- paste(interaction_data$tests, interaction_data$post_hoc, sep = ",")
-
-#View(interaction_data)
+#remove NA's from post hoc column (not relevant)
+interaction_data$all_tests <- paste(interaction_data$tests, interaction_data$post_hoc[!is.na(interaction_data$post_hoc)], sep = ",")
 ```
 
 
@@ -292,87 +291,111 @@ kable(all_tests_summary, col.names = c("all_tests", "freq")) %>%
 <tbody>
   <tr>
    <td style="text-align:left;"> anova,bonferroni </td>
-   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> anova,missing </td>
-   <td style="text-align:right;"> 9 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> anova,NA </td>
-   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 4 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> anova,sidak </td>
    <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> anova,snk </td>
-   <td style="text-align:right;"> 2 </td>
-  </tr>
-  <tr>
    <td style="text-align:left;"> anova,tukey </td>
-   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 10 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> duncan,NA </td>
+   <td style="text-align:left;"> duncan,missing </td>
    <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> dunnett,NA </td>
+   <td style="text-align:left;"> dunnett,missing </td>
    <td style="text-align:right;"> 1 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> generalized linear mixed-effects model,NA </td>
+   <td style="text-align:left;"> generalized linear mixed-effects model,bonferroni </td>
    <td style="text-align:right;"> 1 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> kruskal-wallis,dunn </td>
-   <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> kruskal-wallis,missing </td>
    <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> linear mixed-effects model,NA </td>
+   <td style="text-align:left;"> kruskal-wallis,tukey </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> linear mixed-effects model,bonferroni </td>
    <td style="text-align:right;"> 1 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> moderated t,NA </td>
+   <td style="text-align:left;"> moderated t,bonferroni </td>
    <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> mww,NA </td>
-   <td style="text-align:right;"> 19 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> NA,NA </td>
-   <td style="text-align:right;"> 28 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> one-way anova repeated measures,missing </td>
+   <td style="text-align:left;"> mww,bonferroni </td>
    <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> one-way anova, kruskal-wallis,NA </td>
+   <td style="text-align:left;"> mww,duncan </td>
    <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> one-way anova, tukey,tukey </td>
+   <td style="text-align:left;"> mww,dunnett </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> mww,missing </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> mww,snk </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> mww,tukey </td>
+   <td style="text-align:right;"> 6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA,bonferroni </td>
+   <td style="text-align:right;"> 7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA,duncan </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA,missing </td>
+   <td style="text-align:right;"> 9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA,tukey </td>
+   <td style="text-align:right;"> 10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova repeated measures,snk </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova, kruskal-wallis,tukey </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova, tukey,missing </td>
    <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova,bonferroni </td>
-   <td style="text-align:right;"> 27 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> one-way anova,duncan </td>
-   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 22 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova,dunnett </td>
-   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,holm-sidak </td>
+   <td style="text-align:right;"> 1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova,missing </td>
@@ -384,75 +407,99 @@ kable(all_tests_summary, col.names = c("all_tests", "freq")) %>%
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova,sidak </td>
-   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 13 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> one-way anova,snk </td>
-   <td style="text-align:right;"> 2 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> one-way anova,t </td>
+   <td style="text-align:left;"> one-way anova,sidak, dunnett </td>
    <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova,tukey </td>
-   <td style="text-align:right;"> 36 </td>
+   <td style="text-align:right;"> 34 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> paired-sample t test,NA </td>
+   <td style="text-align:left;"> paired-sample t test,bonferroni </td>
    <td style="text-align:right;"> 1 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> t,NA </td>
-   <td style="text-align:right;"> 173 </td>
+   <td style="text-align:left;"> t,bonferroni </td>
+   <td style="text-align:right;"> 32 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> tukey,NA </td>
+   <td style="text-align:left;"> t,dunn </td>
    <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> two-way anova repeated measures,bonferroni </td>
+   <td style="text-align:left;"> t,dunnett </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,holm-sidak </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,missing </td>
+   <td style="text-align:right;"> 53 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,sidak </td>
+   <td style="text-align:right;"> 24 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,sidak's multiple comparison </td>
    <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> two-way anova repeated measures,sidak </td>
+   <td style="text-align:left;"> t,sidak, dunnett </td>
    <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,snk </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,t </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,tukey </td>
+   <td style="text-align:right;"> 45 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> tukey,dunn </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova repeated measures,tukey </td>
+   <td style="text-align:right;"> 3 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> two-way anova,bonferroni </td>
-   <td style="text-align:right;"> 10 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> two-way anova,dunnett </td>
-   <td style="text-align:right;"> 2 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> two-way anova,holm-sidak </td>
-   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 18 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> two-way anova,missing </td>
-   <td style="text-align:right;"> 13 </td>
+   <td style="text-align:right;"> 16 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,scheffe </td>
+   <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> two-way anova,sidak </td>
-   <td style="text-align:right;"> 8 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> two-way anova,sidak's multiple comparison </td>
-   <td style="text-align:right;"> 1 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> two-way anova,sidak, dunnett </td>
-   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> two-way anova,tukey </td>
-   <td style="text-align:right;"> 13 </td>
+   <td style="text-align:right;"> 12 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> welch t,NA </td>
-   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> welch t,bonferroni </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> welch t,missing </td>
+   <td style="text-align:right;"> 1 </td>
   </tr>
 </tbody>
 </table>

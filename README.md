@@ -1,1 +1,0 @@
-# factorial_design

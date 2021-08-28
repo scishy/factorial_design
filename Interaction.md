@@ -1,7 +1,7 @@
 ---
 title: "Interaction"
 author: "Shylo Burrell"
-date: "08/18/2021"
+date: "08/28/2021"
 output: 
   html_document:
     keep_md: TRUE
@@ -38,12 +38,14 @@ interaction_data <- interaction_data_raw[
 #add new column combining all tests performed
 #remove NA's from post hoc column (not relevant)
 interaction_data$all_tests <- paste(interaction_data$tests, interaction_data$post_hoc[!is.na(interaction_data$post_hoc)], sep = ",")
+
+#View(interaction_data)
 ```
 
 
 
 ```r
-design_summary <- table(interaction_data$design) %>%
+design_summary <- table(interaction_data$design, useNA = "ifany") %>%
   data.table() 
 design_summary$percent <- design_summary$N/sum(design_summary$N)*100
 kable(design_summary, col.names = c("design", "freq", "percent"), digits = c(1,1,1)) %>%
@@ -128,7 +130,7 @@ kable(design_summary, col.names = c("design", "freq", "percent"), digits = c(1,1
 </table>
 
 ```r
-data_availability_summary <- table(interaction_data$data_availability) %>%
+data_availability_summary <- table(interaction_data$data_availability, useNA = "ifany") %>%
   data.table() 
 data_availability_summary$percent <- data_availability_summary$N/sum(data_availability_summary$N)*100
 kable(data_availability_summary, col.names = c("data_availability", "freq", "percent"), digits = c(1,1,1)) %>%
@@ -158,7 +160,7 @@ kable(data_availability_summary, col.names = c("data_availability", "freq", "per
 </table>
 
 ```r
-analysis_summary <- table(interaction_data$analysis) %>%
+analysis_summary <- table(interaction_data$analysis, useNA = "ifany") %>%
   data.table() 
 analysis_summary$percent <- analysis_summary$N/sum(analysis_summary$N)*100
 kable(analysis_summary, col.names = c("analysis", "freq", "percent"), digits = c(1,1,1)) %>%
@@ -177,18 +179,23 @@ kable(analysis_summary, col.names = c("analysis", "freq", "percent"), digits = c
   <tr>
    <td style="text-align:left;"> factorial </td>
    <td style="text-align:right;"> 54 </td>
-   <td style="text-align:right;"> 14.2 </td>
+   <td style="text-align:right;"> 12.8 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> flat </td>
    <td style="text-align:right;"> 325 </td>
-   <td style="text-align:right;"> 85.8 </td>
+   <td style="text-align:right;"> 77.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:right;"> 43 </td>
+   <td style="text-align:right;"> 10.2 </td>
   </tr>
 </tbody>
 </table>
 
 ```r
-t_tests_summary <- table(interaction_data$t_tests) %>%
+t_tests_summary <- table(interaction_data$t_tests, useNA = "ifany") %>%
   data.table() 
 t_tests_summary$percent <- t_tests_summary$N/sum(t_tests_summary$N)*100
 kable(t_tests_summary, col.names = c("t_tests", "freq", "percent"), digits = c(1,1,1)) %>%
@@ -207,18 +214,23 @@ kable(t_tests_summary, col.names = c("t_tests", "freq", "percent"), digits = c(1
   <tr>
    <td style="text-align:left;"> combined </td>
    <td style="text-align:right;"> 160 </td>
-   <td style="text-align:right;"> 42.2 </td>
+   <td style="text-align:right;"> 37.9 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> separate </td>
    <td style="text-align:right;"> 219 </td>
-   <td style="text-align:right;"> 57.8 </td>
+   <td style="text-align:right;"> 51.9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:right;"> 43 </td>
+   <td style="text-align:right;"> 10.2 </td>
   </tr>
 </tbody>
 </table>
 
 ```r
-tests_summary <- table(interaction_data$tests) %>%
+tests_summary <- table(interaction_data$tests, useNA = "ifany") %>%
   data.table() 
 tests_summary$percent <- tests_summary$N/sum(tests_summary$N)*100
 kable(tests_summary, col.names = c("tests", "freq", "percent"), digits = c(1,1,1)) %>%
@@ -237,7 +249,7 @@ kable(tests_summary, col.names = c("tests", "freq", "percent"), digits = c(1,1,1
   <tr>
    <td style="text-align:left;"> anova </td>
    <td style="text-align:right;"> 21 </td>
-   <td style="text-align:right;"> 5.3 </td>
+   <td style="text-align:right;"> 5.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> duncan </td>
@@ -247,22 +259,22 @@ kable(tests_summary, col.names = c("tests", "freq", "percent"), digits = c(1,1,1
   <tr>
    <td style="text-align:left;"> dunnett </td>
    <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.3 </td>
+   <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> generalized linear mixed-effects model </td>
    <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.3 </td>
+   <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> kruskal-wallis </td>
    <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 1.0 </td>
+   <td style="text-align:right;"> 0.9 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> linear mixed-effects model </td>
    <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.3 </td>
+   <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> moderated t </td>
@@ -272,12 +284,12 @@ kable(tests_summary, col.names = c("tests", "freq", "percent"), digits = c(1,1,1
   <tr>
    <td style="text-align:left;"> mww </td>
    <td style="text-align:right;"> 19 </td>
-   <td style="text-align:right;"> 4.8 </td>
+   <td style="text-align:right;"> 4.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova </td>
    <td style="text-align:right;"> 105 </td>
-   <td style="text-align:right;"> 26.6 </td>
+   <td style="text-align:right;"> 24.9 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova repeated measures </td>
@@ -297,12 +309,12 @@ kable(tests_summary, col.names = c("tests", "freq", "percent"), digits = c(1,1,1
   <tr>
    <td style="text-align:left;"> paired-sample t test </td>
    <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.3 </td>
+   <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> t </td>
    <td style="text-align:right;"> 173 </td>
-   <td style="text-align:right;"> 43.9 </td>
+   <td style="text-align:right;"> 41.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> tukey </td>
@@ -312,23 +324,28 @@ kable(tests_summary, col.names = c("tests", "freq", "percent"), digits = c(1,1,1
   <tr>
    <td style="text-align:left;"> two-way anova </td>
    <td style="text-align:right;"> 50 </td>
-   <td style="text-align:right;"> 12.7 </td>
+   <td style="text-align:right;"> 11.8 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> two-way anova repeated measures </td>
    <td style="text-align:right;"> 3 </td>
-   <td style="text-align:right;"> 0.8 </td>
+   <td style="text-align:right;"> 0.7 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> welch t </td>
    <td style="text-align:right;"> 3 </td>
-   <td style="text-align:right;"> 0.8 </td>
+   <td style="text-align:right;"> 0.7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:right;"> 28 </td>
+   <td style="text-align:right;"> 6.6 </td>
   </tr>
 </tbody>
 </table>
 
 ```r
-all_tests_summary <- table(interaction_data$all_tests) %>%
+all_tests_summary <- table(interaction_data$all_tests, useNA = "ifany") %>%
   data.table() 
 all_tests_summary$percent <- all_tests_summary$N/sum(all_tests_summary$N)*100
 kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits = c(1,1,1)) %>%
@@ -613,7 +630,7 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
 </table>
 
 ```r
-post_hoc_summary <- table(interaction_data$post_hoc) %>%
+post_hoc_summary <- table(interaction_data$post_hoc, useNA = "ifany") %>%
   data.table() 
 post_hoc_summary$percent <- post_hoc_summary$N/sum(post_hoc_summary$N)*100
 kable(post_hoc_summary, col.names = c("post_hoc", "freq", "percent"), digits = c(1,1,1)) %>%
@@ -632,73 +649,78 @@ kable(post_hoc_summary, col.names = c("post_hoc", "freq", "percent"), digits = c
   <tr>
    <td style="text-align:left;"> bonferroni </td>
    <td style="text-align:right;"> 41 </td>
-   <td style="text-align:right;"> 22.2 </td>
+   <td style="text-align:right;"> 9.7 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> duncan </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 1.1 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> dunn </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 1.1 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> dunnett </td>
    <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 2.2 </td>
+   <td style="text-align:right;"> 0.9 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> holm-sidak </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 1.1 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> missing </td>
    <td style="text-align:right;"> 52 </td>
-   <td style="text-align:right;"> 28.1 </td>
+   <td style="text-align:right;"> 12.3 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> scheffe </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 1.1 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> sidak </td>
    <td style="text-align:right;"> 17 </td>
-   <td style="text-align:right;"> 9.2 </td>
+   <td style="text-align:right;"> 4.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> sidak's multiple comparison </td>
    <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> sidak, dunnett </td>
    <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> snk </td>
    <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 2.2 </td>
+   <td style="text-align:right;"> 0.9 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> t </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 1.1 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> tukey </td>
    <td style="text-align:right;"> 55 </td>
-   <td style="text-align:right;"> 29.7 </td>
+   <td style="text-align:right;"> 13.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:right;"> 237 </td>
+   <td style="text-align:right;"> 56.2 </td>
   </tr>
 </tbody>
 </table>
 
 ```r
-ixn_reported_summary <- table(interaction_data$ixn_reported) %>%
+ixn_reported_summary <- table(interaction_data$ixn_reported, useNA = "ifany") %>%
   data.table() 
 ixn_reported_summary$percent <- ixn_reported_summary$N/sum(ixn_reported_summary$N)*100
 kable(ixn_reported_summary, col.names = c("ixn_reported", "freq", "percent"), digits = c(1, 1, 1)) %>%
@@ -717,18 +739,23 @@ kable(ixn_reported_summary, col.names = c("ixn_reported", "freq", "percent"), di
   <tr>
    <td style="text-align:left;"> no </td>
    <td style="text-align:right;"> 378 </td>
-   <td style="text-align:right;"> 96.9 </td>
+   <td style="text-align:right;"> 89.6 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> yes </td>
    <td style="text-align:right;"> 12 </td>
-   <td style="text-align:right;"> 3.1 </td>
+   <td style="text-align:right;"> 2.8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:right;"> 32 </td>
+   <td style="text-align:right;"> 7.6 </td>
   </tr>
 </tbody>
 </table>
 
 
-### Pairwise comparisons
+### Comparisons
 
 design by journal
 
@@ -1069,7 +1096,7 @@ design_vs_t_tests
 ![](Interaction_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
 
 
-design vs tests (color by rank)
+design vs tests
 
 ```r
 design_vs_tests <- ggplot(data = interaction_data,
@@ -1445,7 +1472,7 @@ all_tests_vs_ixn_reported
 
 Example 1: Estimation of a treatment effect relative to a control effect (“Something different”) 
 
-Example 2: Estimation of the effect of background condition on an effect (“it depends”)  
+Example 2: Estimation of the effect of background condition on an effect (“it depends”)
 
 Example 3: Estimation of synergy (“More than the sum of the parts”)    
   used "synergy" and have data available:  

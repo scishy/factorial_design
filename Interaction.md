@@ -630,7 +630,7 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
 </table>
 
 ```r
-post_hoc_summary <- table(interaction_data$post_hoc, useNA = "ifany") %>%
+post_hoc_summary <- table(interaction_data$post_hoc) %>%
   data.table() 
 post_hoc_summary$percent <- post_hoc_summary$N/sum(post_hoc_summary$N)*100
 kable(post_hoc_summary, col.names = c("post_hoc", "freq", "percent"), digits = c(1,1,1)) %>%
@@ -649,72 +649,67 @@ kable(post_hoc_summary, col.names = c("post_hoc", "freq", "percent"), digits = c
   <tr>
    <td style="text-align:left;"> bonferroni </td>
    <td style="text-align:right;"> 41 </td>
-   <td style="text-align:right;"> 9.7 </td>
+   <td style="text-align:right;"> 22.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> duncan </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 1.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> dunn </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 1.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> dunnett </td>
    <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 0.9 </td>
+   <td style="text-align:right;"> 2.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> holm-sidak </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 1.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> missing </td>
    <td style="text-align:right;"> 52 </td>
-   <td style="text-align:right;"> 12.3 </td>
+   <td style="text-align:right;"> 28.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> scheffe </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 1.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> sidak </td>
    <td style="text-align:right;"> 17 </td>
-   <td style="text-align:right;"> 4.0 </td>
+   <td style="text-align:right;"> 9.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> sidak's multiple comparison </td>
    <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.2 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> sidak, dunnett </td>
    <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.2 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> snk </td>
    <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 0.9 </td>
+   <td style="text-align:right;"> 2.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> t </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 1.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> tukey </td>
    <td style="text-align:right;"> 55 </td>
-   <td style="text-align:right;"> 13.0 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> NA </td>
-   <td style="text-align:right;"> 237 </td>
-   <td style="text-align:right;"> 56.2 </td>
+   <td style="text-align:right;"> 29.7 </td>
   </tr>
 </tbody>
 </table>

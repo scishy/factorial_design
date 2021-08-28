@@ -23,7 +23,7 @@ file_name <- "interaction - testing.xlsx"
 
 file_path <- here(data_folder, data_from, file_name)
 interaction_data_raw <- read_excel(file_path,
-                                     sheet = "Sheet1",
+                                     sheet = "data",
                                      range = "A1:Z476") %>%
   clean_names()  %>%
   data.table()
@@ -63,8 +63,8 @@ kable(design_summary, col.names = c("design", "freq", "percent"), digits = c(1,1
 <tbody>
   <tr>
    <td style="text-align:left;"> 2x2 </td>
-   <td style="text-align:right;"> 249 </td>
-   <td style="text-align:right;"> 59.0 </td>
+   <td style="text-align:right;"> 247 </td>
+   <td style="text-align:right;"> 58.8 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> 2x2x2 </td>
@@ -79,7 +79,7 @@ kable(design_summary, col.names = c("design", "freq", "percent"), digits = c(1,1
   <tr>
    <td style="text-align:left;"> 3x2 </td>
    <td style="text-align:right;"> 103 </td>
-   <td style="text-align:right;"> 24.4 </td>
+   <td style="text-align:right;"> 24.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> 3x2+1 </td>
@@ -148,13 +148,18 @@ kable(data_availability_summary, col.names = c("data_availability", "freq", "per
 <tbody>
   <tr>
    <td style="text-align:left;"> no </td>
-   <td style="text-align:right;"> 365 </td>
-   <td style="text-align:right;"> 86.5 </td>
+   <td style="text-align:right;"> 369 </td>
+   <td style="text-align:right;"> 87.9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> partial </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 1.7 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> yes </td>
-   <td style="text-align:right;"> 57 </td>
-   <td style="text-align:right;"> 13.5 </td>
+   <td style="text-align:right;"> 44 </td>
+   <td style="text-align:right;"> 10.5 </td>
   </tr>
 </tbody>
 </table>
@@ -178,18 +183,18 @@ kable(analysis_summary, col.names = c("analysis", "freq", "percent"), digits = c
 <tbody>
   <tr>
    <td style="text-align:left;"> factorial </td>
-   <td style="text-align:right;"> 54 </td>
-   <td style="text-align:right;"> 12.8 </td>
+   <td style="text-align:right;"> 52 </td>
+   <td style="text-align:right;"> 12.4 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> flat </td>
-   <td style="text-align:right;"> 325 </td>
-   <td style="text-align:right;"> 77.0 </td>
+   <td style="text-align:right;"> 319 </td>
+   <td style="text-align:right;"> 76.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> NA </td>
-   <td style="text-align:right;"> 43 </td>
-   <td style="text-align:right;"> 10.2 </td>
+   <td style="text-align:right;"> 49 </td>
+   <td style="text-align:right;"> 11.7 </td>
   </tr>
 </tbody>
 </table>
@@ -213,18 +218,18 @@ kable(t_tests_summary, col.names = c("t_tests", "freq", "percent"), digits = c(1
 <tbody>
   <tr>
    <td style="text-align:left;"> combined </td>
-   <td style="text-align:right;"> 160 </td>
-   <td style="text-align:right;"> 37.9 </td>
+   <td style="text-align:right;"> 157 </td>
+   <td style="text-align:right;"> 37.4 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> separate </td>
-   <td style="text-align:right;"> 219 </td>
-   <td style="text-align:right;"> 51.9 </td>
+   <td style="text-align:right;"> 200 </td>
+   <td style="text-align:right;"> 47.6 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> NA </td>
-   <td style="text-align:right;"> 43 </td>
-   <td style="text-align:right;"> 10.2 </td>
+   <td style="text-align:right;"> 63 </td>
+   <td style="text-align:right;"> 15.0 </td>
   </tr>
 </tbody>
 </table>
@@ -252,44 +257,24 @@ kable(tests_summary, col.names = c("tests", "freq", "percent"), digits = c(1,1,1
    <td style="text-align:right;"> 5.0 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> duncan </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> dunnett </td>
-   <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.2 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> generalized linear mixed-effects model </td>
-   <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.2 </td>
-  </tr>
-  <tr>
    <td style="text-align:left;"> kruskal-wallis </td>
    <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 0.9 </td>
+   <td style="text-align:right;"> 1.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> linear mixed-effects model </td>
-   <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.2 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> moderated t </td>
    <td style="text-align:right;"> 2 </td>
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mww </td>
-   <td style="text-align:right;"> 19 </td>
-   <td style="text-align:right;"> 4.5 </td>
+   <td style="text-align:right;"> 18 </td>
+   <td style="text-align:right;"> 4.3 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova </td>
-   <td style="text-align:right;"> 105 </td>
-   <td style="text-align:right;"> 24.9 </td>
+   <td style="text-align:right;"> 107 </td>
+   <td style="text-align:right;"> 25.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova repeated measures </td>
@@ -302,19 +287,14 @@ kable(tests_summary, col.names = c("tests", "freq", "percent"), digits = c(1,1,1
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> one-way anova, tukey </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
-  </tr>
-  <tr>
    <td style="text-align:left;"> paired-sample t test </td>
    <td style="text-align:right;"> 1 </td>
    <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> t </td>
-   <td style="text-align:right;"> 173 </td>
-   <td style="text-align:right;"> 41.0 </td>
+   <td style="text-align:right;"> 170 </td>
+   <td style="text-align:right;"> 40.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> tukey </td>
@@ -324,22 +304,22 @@ kable(tests_summary, col.names = c("tests", "freq", "percent"), digits = c(1,1,1
   <tr>
    <td style="text-align:left;"> two-way anova </td>
    <td style="text-align:right;"> 50 </td>
-   <td style="text-align:right;"> 11.8 </td>
+   <td style="text-align:right;"> 11.9 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> two-way anova repeated measures </td>
-   <td style="text-align:right;"> 3 </td>
-   <td style="text-align:right;"> 0.7 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> welch t </td>
-   <td style="text-align:right;"> 3 </td>
-   <td style="text-align:right;"> 0.7 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 1.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> NA </td>
-   <td style="text-align:right;"> 28 </td>
-   <td style="text-align:right;"> 6.6 </td>
+   <td style="text-align:right;"> 36 </td>
+   <td style="text-align:right;"> 8.6 </td>
   </tr>
 </tbody>
 </table>
@@ -363,13 +343,13 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
 <tbody>
   <tr>
    <td style="text-align:left;"> anova,bonferroni </td>
-   <td style="text-align:right;"> 5 </td>
-   <td style="text-align:right;"> 1.2 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 1.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> anova,missing </td>
-   <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 0.9 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 2.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> anova,sidak </td>
@@ -377,24 +357,19 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> anova,tukey </td>
-   <td style="text-align:right;"> 10 </td>
-   <td style="text-align:right;"> 2.4 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> duncan,missing </td>
+   <td style="text-align:left;"> anova,snk </td>
    <td style="text-align:right;"> 2 </td>
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> dunnett,missing </td>
-   <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.2 </td>
+   <td style="text-align:left;"> anova,tukey </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 1.0 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> generalized linear mixed-effects model,bonferroni </td>
-   <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.2 </td>
+   <td style="text-align:left;"> kruskal-wallis,dunn </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> kruskal-wallis,missing </td>
@@ -402,24 +377,19 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> kruskal-wallis,tukey </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> linear mixed-effects model,bonferroni </td>
+   <td style="text-align:left;"> linear mixed-effects model,sidak, dunnett </td>
    <td style="text-align:right;"> 1 </td>
    <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> moderated t,bonferroni </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:left;"> linear mixed-effects model,sidak, holm-sidak </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mww,bonferroni </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 1.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mww,duncan </td>
@@ -427,29 +397,24 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> mww,dunnett </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
-  </tr>
-  <tr>
    <td style="text-align:left;"> mww,missing </td>
-   <td style="text-align:right;"> 5 </td>
-   <td style="text-align:right;"> 1.2 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 1.7 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> mww,snk </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:left;"> mww,sidak </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> mww,tukey </td>
-   <td style="text-align:right;"> 6 </td>
-   <td style="text-align:right;"> 1.4 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 1.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> NA,bonferroni </td>
-   <td style="text-align:right;"> 7 </td>
-   <td style="text-align:right;"> 1.7 </td>
+   <td style="text-align:right;"> 23 </td>
+   <td style="text-align:right;"> 5.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> NA,duncan </td>
@@ -457,44 +422,54 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
+   <td style="text-align:left;"> NA,dunn </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA,dunnett </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
+  </tr>
+  <tr>
    <td style="text-align:left;"> NA,missing </td>
-   <td style="text-align:right;"> 9 </td>
-   <td style="text-align:right;"> 2.1 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> NA,sidak </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> NA,tukey </td>
-   <td style="text-align:right;"> 10 </td>
-   <td style="text-align:right;"> 2.4 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 1.0 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> one-way anova repeated measures,snk </td>
+   <td style="text-align:left;"> one-way anova repeated measures,missing </td>
    <td style="text-align:right;"> 2 </td>
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> one-way anova, kruskal-wallis,tukey </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> one-way anova, tukey,missing </td>
+   <td style="text-align:left;"> one-way anova, kruskal-wallis,missing </td>
    <td style="text-align:right;"> 2 </td>
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova,bonferroni </td>
-   <td style="text-align:right;"> 22 </td>
-   <td style="text-align:right;"> 5.2 </td>
+   <td style="text-align:right;"> 27 </td>
+   <td style="text-align:right;"> 6.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,duncan </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova,dunnett </td>
-   <td style="text-align:right;"> 5 </td>
-   <td style="text-align:right;"> 1.2 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> one-way anova,holm-sidak </td>
-   <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.2 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova,missing </td>
@@ -508,18 +483,23 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova,sidak </td>
-   <td style="text-align:right;"> 13 </td>
-   <td style="text-align:right;"> 3.1 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 1.4 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> one-way anova,sidak, dunnett </td>
+   <td style="text-align:left;"> one-way anova,snk </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> one-way anova,t </td>
    <td style="text-align:right;"> 2 </td>
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> one-way anova,tukey </td>
-   <td style="text-align:right;"> 34 </td>
-   <td style="text-align:right;"> 8.1 </td>
+   <td style="text-align:right;"> 38 </td>
+   <td style="text-align:right;"> 9.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> paired-sample t test,bonferroni </td>
@@ -528,53 +508,53 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
   </tr>
   <tr>
    <td style="text-align:left;"> t,bonferroni </td>
-   <td style="text-align:right;"> 32 </td>
-   <td style="text-align:right;"> 7.6 </td>
+   <td style="text-align:right;"> 49 </td>
+   <td style="text-align:right;"> 11.7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,duncan </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 1.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> t,dunn </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> t,dunnett </td>
-   <td style="text-align:right;"> 3 </td>
-   <td style="text-align:right;"> 0.7 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> t,holm-sidak </td>
-   <td style="text-align:right;"> 3 </td>
-   <td style="text-align:right;"> 0.7 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> t,missing </td>
-   <td style="text-align:right;"> 53 </td>
-   <td style="text-align:right;"> 12.6 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> t,sidak </td>
-   <td style="text-align:right;"> 24 </td>
-   <td style="text-align:right;"> 5.7 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> t,sidak's multiple comparison </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> t,sidak, dunnett </td>
    <td style="text-align:right;"> 1 </td>
    <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
+   <td style="text-align:left;"> t,dunnett </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 1.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,holm-sidak </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,missing </td>
+   <td style="text-align:right;"> 42 </td>
+   <td style="text-align:right;"> 10.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,scheffe </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> t,sidak </td>
+   <td style="text-align:right;"> 15 </td>
+   <td style="text-align:right;"> 3.6 </td>
+  </tr>
+  <tr>
    <td style="text-align:left;"> t,snk </td>
    <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 0.9 </td>
+   <td style="text-align:right;"> 1.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> t,t </td>
-   <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 0.9 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> t,tukey </td>
@@ -582,39 +562,54 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
    <td style="text-align:right;"> 10.7 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> tukey,dunn </td>
+   <td style="text-align:left;"> tukey,tukey </td>
    <td style="text-align:right;"> 2 </td>
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> two-way anova repeated measures,tukey </td>
-   <td style="text-align:right;"> 3 </td>
-   <td style="text-align:right;"> 0.7 </td>
+   <td style="text-align:left;"> two-way anova repeated measures,sidak </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> two-way anova,bonferroni </td>
-   <td style="text-align:right;"> 18 </td>
-   <td style="text-align:right;"> 4.3 </td>
+   <td style="text-align:right;"> 10 </td>
+   <td style="text-align:right;"> 2.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,dunnett </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,holm-sidak </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> two-way anova,missing </td>
-   <td style="text-align:right;"> 16 </td>
-   <td style="text-align:right;"> 3.8 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> two-way anova,scheffe </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 12 </td>
+   <td style="text-align:right;"> 2.9 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> two-way anova,sidak </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 2.1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,sidak, dunnett </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> two-way anova,sidak, holm-sidak </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> two-way anova,tukey </td>
-   <td style="text-align:right;"> 12 </td>
-   <td style="text-align:right;"> 2.8 </td>
+   <td style="text-align:right;"> 13 </td>
+   <td style="text-align:right;"> 3.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> welch t,bonferroni </td>
@@ -623,8 +618,8 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
   </tr>
   <tr>
    <td style="text-align:left;"> welch t,missing </td>
-   <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.2 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
 </tbody>
 </table>
@@ -648,13 +643,13 @@ kable(post_hoc_summary, col.names = c("post_hoc", "freq", "percent"), digits = c
 <tbody>
   <tr>
    <td style="text-align:left;"> bonferroni </td>
-   <td style="text-align:right;"> 41 </td>
-   <td style="text-align:right;"> 22.2 </td>
+   <td style="text-align:right;"> 40 </td>
+   <td style="text-align:right;"> 21.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> duncan </td>
-   <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 1.1 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 2.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> dunn </td>
@@ -663,8 +658,8 @@ kable(post_hoc_summary, col.names = c("post_hoc", "freq", "percent"), digits = c
   </tr>
   <tr>
    <td style="text-align:left;"> dunnett </td>
-   <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 2.2 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 2.6 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> holm-sidak </td>
@@ -673,8 +668,8 @@ kable(post_hoc_summary, col.names = c("post_hoc", "freq", "percent"), digits = c
   </tr>
   <tr>
    <td style="text-align:left;"> missing </td>
-   <td style="text-align:right;"> 52 </td>
-   <td style="text-align:right;"> 28.1 </td>
+   <td style="text-align:right;"> 53 </td>
+   <td style="text-align:right;"> 28.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> scheffe </td>
@@ -683,13 +678,8 @@ kable(post_hoc_summary, col.names = c("post_hoc", "freq", "percent"), digits = c
   </tr>
   <tr>
    <td style="text-align:left;"> sidak </td>
-   <td style="text-align:right;"> 17 </td>
-   <td style="text-align:right;"> 9.2 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> sidak's multiple comparison </td>
-   <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 18 </td>
+   <td style="text-align:right;"> 9.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> sidak, dunnett </td>
@@ -697,9 +687,14 @@ kable(post_hoc_summary, col.names = c("post_hoc", "freq", "percent"), digits = c
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
+   <td style="text-align:left;"> sidak, holm-sidak </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.5 </td>
+  </tr>
+  <tr>
    <td style="text-align:left;"> snk </td>
    <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 2.2 </td>
+   <td style="text-align:right;"> 2.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> t </td>
@@ -709,7 +704,7 @@ kable(post_hoc_summary, col.names = c("post_hoc", "freq", "percent"), digits = c
   <tr>
    <td style="text-align:left;"> tukey </td>
    <td style="text-align:right;"> 55 </td>
-   <td style="text-align:right;"> 29.7 </td>
+   <td style="text-align:right;"> 29.1 </td>
   </tr>
 </tbody>
 </table>
@@ -733,18 +728,18 @@ kable(ixn_reported_summary, col.names = c("ixn_reported", "freq", "percent"), di
 <tbody>
   <tr>
    <td style="text-align:left;"> no </td>
-   <td style="text-align:right;"> 378 </td>
-   <td style="text-align:right;"> 89.6 </td>
+   <td style="text-align:right;"> 377 </td>
+   <td style="text-align:right;"> 89.8 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> yes </td>
    <td style="text-align:right;"> 12 </td>
-   <td style="text-align:right;"> 2.8 </td>
+   <td style="text-align:right;"> 2.9 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> NA </td>
-   <td style="text-align:right;"> 32 </td>
-   <td style="text-align:right;"> 7.6 </td>
+   <td style="text-align:right;"> 31 </td>
+   <td style="text-align:right;"> 7.4 </td>
   </tr>
 </tbody>
 </table>

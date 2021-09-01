@@ -1,7 +1,7 @@
 ---
 title: "Interaction"
 author: "Shylo Burrell"
-date: "08/28/2021"
+date: "09/01/2021"
 output: 
   html_document:
     keep_md: TRUE
@@ -41,8 +41,12 @@ interaction_data <- interaction_data_raw[
 ```r
 #add new column combining all tests performed
 #remove NA's from post hoc column (not relevant)
-interaction_data$post_hoc[is.na(interaction_data$post_hoc)] <- ""
-interaction_data$all_tests <- paste(interaction_data$tests, interaction_data$post_hoc, sep = ",")
+
+interaction_data$all_tests <- ifelse(
+  !is.na(interaction_data$post_hoc),
+  paste(interaction_data$tests, interaction_data$post_hoc, sep = ","), 
+  paste(interaction_data$tests) 
+  )
 
 #View(interaction_data)
 ```
@@ -134,6 +138,8 @@ kable(design_summary, col.names = c("design", "freq", "percent"), digits = c(1,1
 </tbody>
 </table>
 
+
+
 ```r
 data_availability_summary <- table(interaction_data$data_availability, useNA = "ifany") %>%
   data.table() 
@@ -168,6 +174,8 @@ kable(data_availability_summary, col.names = c("data_availability", "freq", "per
   </tr>
 </tbody>
 </table>
+
+
 
 ```r
 analysis_summary <- table(interaction_data$analysis, useNA = "ifany") %>%
@@ -204,6 +212,8 @@ kable(analysis_summary, col.names = c("analysis", "freq", "percent"), digits = c
 </tbody>
 </table>
 
+
+
 ```r
 t_tests_summary <- table(interaction_data$t_tests, useNA = "ifany") %>%
   data.table() 
@@ -238,6 +248,8 @@ kable(t_tests_summary, col.names = c("t_tests", "freq", "percent"), digits = c(1
   </tr>
 </tbody>
 </table>
+
+
 
 ```r
 tests_summary <- table(interaction_data$tests, useNA = "ifany") %>%
@@ -329,6 +341,8 @@ kable(tests_summary, col.names = c("tests", "freq", "percent"), digits = c(1,1,1
 </tbody>
 </table>
 
+
+
 ```r
 all_tests_summary <- table(interaction_data$all_tests, useNA = "ifany") %>%
   data.table() 
@@ -347,7 +361,7 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> anova, </td>
+   <td style="text-align:left;"> anova </td>
    <td style="text-align:right;"> 2 </td>
    <td style="text-align:right;"> 0.5 </td>
   </tr>
@@ -387,17 +401,17 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> linear mixed-effects model, </td>
+   <td style="text-align:left;"> linear mixed-effects model </td>
    <td style="text-align:right;"> 2 </td>
    <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> mww, </td>
+   <td style="text-align:left;"> mww </td>
    <td style="text-align:right;"> 18 </td>
    <td style="text-align:right;"> 4.3 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> NA, </td>
+   <td style="text-align:left;"> NA </td>
    <td style="text-align:right;"> 32 </td>
    <td style="text-align:right;"> 7.6 </td>
   </tr>
@@ -472,17 +486,17 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
    <td style="text-align:right;"> 9.0 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> paired-sample t test, </td>
+   <td style="text-align:left;"> paired-sample t test </td>
    <td style="text-align:right;"> 1 </td>
    <td style="text-align:right;"> 0.2 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> t, </td>
+   <td style="text-align:left;"> t </td>
    <td style="text-align:right;"> 170 </td>
    <td style="text-align:right;"> 40.5 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> tukey, </td>
+   <td style="text-align:left;"> tukey </td>
    <td style="text-align:right;"> 2 </td>
    <td style="text-align:right;"> 0.5 </td>
   </tr>
@@ -532,12 +546,14 @@ kable(all_tests_summary, col.names = c("all_tests", "freq", "percent"), digits =
    <td style="text-align:right;"> 3.1 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> welch t, </td>
+   <td style="text-align:left;"> welch t </td>
    <td style="text-align:right;"> 4 </td>
    <td style="text-align:right;"> 1.0 </td>
   </tr>
 </tbody>
 </table>
+
+
 
 ```r
 post_hoc_summary <- table(interaction_data$post_hoc) %>%
@@ -557,77 +573,74 @@ kable(post_hoc_summary, col.names = c("post_hoc", "freq", "percent"), digits = c
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;">  </td>
-   <td style="text-align:right;"> 231 </td>
-   <td style="text-align:right;"> 55.0 </td>
-  </tr>
-  <tr>
    <td style="text-align:left;"> bonferroni </td>
    <td style="text-align:right;"> 40 </td>
-   <td style="text-align:right;"> 9.5 </td>
+   <td style="text-align:right;"> 21.2 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> duncan </td>
    <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 1.0 </td>
+   <td style="text-align:right;"> 2.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> dunn </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 1.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> dunnett </td>
    <td style="text-align:right;"> 5 </td>
-   <td style="text-align:right;"> 1.2 </td>
+   <td style="text-align:right;"> 2.6 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> holm-sidak </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 1.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> missing </td>
    <td style="text-align:right;"> 53 </td>
-   <td style="text-align:right;"> 12.6 </td>
+   <td style="text-align:right;"> 28.0 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> scheffe </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 1.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> sidak </td>
    <td style="text-align:right;"> 18 </td>
-   <td style="text-align:right;"> 4.3 </td>
+   <td style="text-align:right;"> 9.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> sidak, dunnett </td>
    <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.2 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> sidak, holm-sidak </td>
    <td style="text-align:right;"> 1 </td>
-   <td style="text-align:right;"> 0.2 </td>
+   <td style="text-align:right;"> 0.5 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> snk </td>
    <td style="text-align:right;"> 4 </td>
-   <td style="text-align:right;"> 1.0 </td>
+   <td style="text-align:right;"> 2.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> t </td>
    <td style="text-align:right;"> 2 </td>
-   <td style="text-align:right;"> 0.5 </td>
+   <td style="text-align:right;"> 1.1 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> tukey </td>
    <td style="text-align:right;"> 55 </td>
-   <td style="text-align:right;"> 13.1 </td>
+   <td style="text-align:right;"> 29.1 </td>
   </tr>
 </tbody>
 </table>
+
+
 
 ```r
 ixn_reported_summary <- table(interaction_data$ixn_reported, useNA = "ifany") %>%
@@ -682,7 +695,7 @@ journal_vs_design <- ggplot(data = interaction_data,
 journal_vs_design
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
 data availability by journal
 
@@ -698,7 +711,7 @@ journal_vs_data_availability <- ggplot(data = interaction_data,
 journal_vs_data_availability
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
 
 
 journal vs analysis
@@ -715,7 +728,7 @@ journal_vs_analysis <- ggplot(data = interaction_data,
 journal_vs_analysis
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 
 
@@ -733,7 +746,7 @@ journal_vs_t_tests <- ggplot(data = interaction_data,
 journal_vs_t_tests
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
 
 tests by journal
 
@@ -751,7 +764,7 @@ journal_vs_tests <- ggplot(data = interaction_data,
 journal_vs_tests
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 post hoc by journal
 
@@ -768,7 +781,7 @@ journal_vs_post_hoc <- ggplot(data = interaction_data,
 journal_vs_post_hoc
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 all tests by journal
 
@@ -786,7 +799,7 @@ journal_vs_all_tests <- ggplot(data = interaction_data,
 journal_vs_all_tests
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
 
 interaction by journal
 
@@ -802,7 +815,7 @@ journal_vs_ixn_reported <- ggplot(data = interaction_data,
 journal_vs_ixn_reported
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
 
 design by rank
 
@@ -818,7 +831,7 @@ rank_vs_design <- ggplot(data = interaction_data,
 rank_vs_design
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
 
 
 data availability by rank
@@ -834,7 +847,7 @@ rank_vs_data_availability <- ggplot(data = interaction_data,
 rank_vs_data_availability
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
 
 analysis by rank
 
@@ -849,7 +862,7 @@ rank_vs_analysis <- ggplot(data = interaction_data,
 rank_vs_analysis
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
 
 t tests by rank
 
@@ -864,7 +877,7 @@ rank_vs_t_tests <- ggplot(data = interaction_data,
 rank_vs_t_tests
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
 tests by rank
 
@@ -880,7 +893,7 @@ rank_vs_tests <- ggplot(data = interaction_data,
 rank_vs_tests
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
 
 post hoc by rank
 
@@ -896,7 +909,7 @@ rank_vs_post_hoc <- ggplot(data = interaction_data,
 rank_vs_post_hoc
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
 
 all tests by rank
 
@@ -913,7 +926,7 @@ rank_vs_all_tests <- ggplot(data = interaction_data,
 rank_vs_all_tests
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
 
 interaction reported by rank
 
@@ -928,7 +941,7 @@ rank_vs_ixn_reported<- ggplot(data = interaction_data,
 rank_vs_ixn_reported
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
 
 design vs data availability (color by journal)
 
@@ -943,7 +956,7 @@ design_vs_data_availability_a <- ggplot(data = interaction_data,
 design_vs_data_availability_a 
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
 
 design vs data availability (color by rank)
 
@@ -958,7 +971,7 @@ design_vs_data_availability <- ggplot(data = interaction_data,
 design_vs_data_availability 
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
 
 design vs analysis
 
@@ -973,7 +986,7 @@ design_vs_analysis_a <- ggplot(data = interaction_data,
 design_vs_analysis_a
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
 
 design vs analysis (color by tests)
 
@@ -988,7 +1001,7 @@ design_vs_analysis_b <- ggplot(data = interaction_data,
 design_vs_analysis_b
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
 
 design vs t tests
 
@@ -1003,7 +1016,7 @@ design_vs_t_tests <- ggplot(data = interaction_data,
 design_vs_t_tests
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
 
 design vs tests
@@ -1020,7 +1033,7 @@ design_vs_tests <- ggplot(data = interaction_data,
 design_vs_tests
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
 
 design vs post hoc
 
@@ -1036,7 +1049,7 @@ design_vs_post_hoc <- ggplot(data = interaction_data,
 design_vs_post_hoc
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
 design vs all tests (color by rank)
 
 ```r
@@ -1052,7 +1065,7 @@ design_vs_all_tests <- ggplot(data = interaction_data,
 design_vs_all_tests
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
 
 design vs interaction reported
 
@@ -1068,7 +1081,7 @@ design_vs_ixn_reported <- ggplot(data = interaction_data,
 design_vs_ixn_reported
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
 
 
 data availability by analysis
@@ -1084,7 +1097,7 @@ analysis_vs_data_availability <- ggplot(data = interaction_data,
 analysis_vs_data_availability 
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
 
 data availability by t tests
 
@@ -1099,7 +1112,7 @@ t_tests_vs_data_availability <- ggplot(data = interaction_data,
 t_tests_vs_data_availability 
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
 
 data availability by tests
 
@@ -1114,7 +1127,7 @@ tests_vs_data_availability <- ggplot(data = interaction_data,
 tests_vs_data_availability 
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
 
 data availability by post hoc
 
@@ -1129,7 +1142,7 @@ post_hoc_vs_data_availability <- ggplot(data = interaction_data,
 post_hoc_vs_data_availability 
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
 
 data availability by all tests
 
@@ -1144,7 +1157,7 @@ all_tests_vs_data_availability <- ggplot(data = interaction_data,
 all_tests_vs_data_availability 
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
 
 data availability vs interaction reported
 
@@ -1159,7 +1172,7 @@ data_availability_vs_ixn_reported <- ggplot(data = interaction_data,
 data_availability_vs_ixn_reported
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
 
 analysis by t tests
 
@@ -1174,7 +1187,7 @@ t_tests_vs_analysis <- ggplot(data = interaction_data,
 t_tests_vs_analysis
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-43-1.png)<!-- -->
 
 analysis by tests
 
@@ -1189,7 +1202,7 @@ tests_vs_analysis <- ggplot(data = interaction_data,
 tests_vs_analysis
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
 
 analysis by post hoc
 
@@ -1204,7 +1217,7 @@ post_hoc_vs_analysis <- ggplot(data = interaction_data,
 post_hoc_vs_analysis
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-45-1.png)<!-- -->
 
 analysis by all tests
 
@@ -1219,7 +1232,7 @@ all_tests_vs_analysis <- ggplot(data = interaction_data,
 all_tests_vs_analysis
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
 
 
 analysis vs interaction reported
@@ -1235,7 +1248,7 @@ analysis_vs_ixn_reported <- ggplot(data = interaction_data,
 analysis_vs_ixn_reported
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-47-1.png)<!-- -->
 
 t tests vs tests
 
@@ -1250,7 +1263,7 @@ tests_vs_t_tests <- ggplot(data = interaction_data,
 tests_vs_t_tests
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-41-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-48-1.png)<!-- -->
 
 t tests vs post hoc
 
@@ -1266,7 +1279,7 @@ t_tests_vs_post_hoc <- ggplot(data = interaction_data,
 t_tests_vs_post_hoc
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-42-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-49-1.png)<!-- -->
 
 
 all tests vs t tests
@@ -1282,7 +1295,7 @@ all_tests_vs_t_tests <- ggplot(data = interaction_data,
 all_tests_vs_t_tests
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-43-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-50-1.png)<!-- -->
 
 t tests vs interaction reported
 
@@ -1297,7 +1310,7 @@ t_tests_vs_ixn_reported <- ggplot(data = interaction_data,
 t_tests_vs_ixn_reported
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-44-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-51-1.png)<!-- -->
 
 tests vs post hoc
 
@@ -1313,7 +1326,7 @@ tests_vs_post_hoc <- ggplot(data = interaction_data,
 tests_vs_post_hoc
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-45-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-52-1.png)<!-- -->
 
 tests vs interaction reported
 
@@ -1328,7 +1341,7 @@ tests_vs_ixn_reported <- ggplot(data = interaction_data,
 tests_vs_ixn_reported
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-46-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-53-1.png)<!-- -->
 
 
 
@@ -1343,7 +1356,7 @@ post_hoc_vs_ixn_reported <- ggplot(data = interaction_data,
 post_hoc_vs_ixn_reported
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-47-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-54-1.png)<!-- -->
 
 
 all tests vs interaction reported
@@ -1359,7 +1372,7 @@ all_tests_vs_ixn_reported <- ggplot(data = interaction_data,
 all_tests_vs_ixn_reported
 ```
 
-![](Interaction_files/figure-html/unnamed-chunk-48-1.png)<!-- -->
+![](Interaction_files/figure-html/unnamed-chunk-55-1.png)<!-- -->
 
 
 
